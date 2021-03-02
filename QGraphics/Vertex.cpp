@@ -9,13 +9,13 @@ namespace QG
 		result.push_back(position.get(2));
 		result.push_back(position.get(3));
 		
-		if (usingColour())
-		{
-			result.push_back(colour.get(1));
-			result.push_back(colour.get(2));
-			result.push_back(colour.get(3));
-			result.push_back(colour.get(4));
-		}
+		//if (usingColour())
+		//{
+		//	result.push_back(colour.get(1));
+		//	result.push_back(colour.get(2));
+		//	result.push_back(colour.get(3));
+		//	result.push_back(colour.get(4));
+		//}
 
 		if (usingTexCoords())
 		{
@@ -33,32 +33,27 @@ namespace QG
 		return result;
 	}
 
-	Vertex::Vertex() : Vertex(QM::vector<3>(0.0f, 0.0f, 0.0f), GREY)
+	Vertex::Vertex() : Vertex(QM::vector<3>(0.0f, 0.0f, 0.0f), Material(GREY,GREY,0.0f))
 	{
 	}
 
-	Vertex::Vertex(QM::vector<3> pos, Colour col): Vertex(pos,col,QM::vector<2>(0.0f,0.0f), QM::vector<3>(0.0f,0.0f,0.0f))
+	Vertex::Vertex(QM::vector<3> pos, Material mat): Vertex(pos,mat,QM::vector<2>(0.0f,0.0f), QM::vector<3>(0.0f,0.0f,0.0f))
 	{
 		state = 4;
 	}
 
-	Vertex::Vertex(QM::vector<3> pos, Colour col, QM::vector<2> tex, QM::vector<3> norm)
+	Vertex::Vertex(QM::vector<3> pos, Material mat, QM::vector<2> tex, QM::vector<3> norm): material(&mat)
 	{
 		state = 7;
 		position = pos;
-		colour = col;
 		texCoords = tex;
 		normal = norm;
 	}
 
-	Vertex::Vertex(float x, float y, float z) : Vertex(QM::vector<3>(x, y, z), GREY)
+	Vertex::Vertex(float x, float y, float z) : Vertex(QM::vector<3>(x, y, z), Material(GREY,GREY,0.0f))
 	{
 	}
 
-	bool Vertex::usingColour()
-	{
-		return state > 3;
-	}
 	bool Vertex::usingTexCoords()
 	{
 		return state % 4 > 1;
@@ -66,12 +61,6 @@ namespace QG
 	bool Vertex::usingNormal()
 	{
 		return state % 2 == 1;
-	}
-
-	void Vertex::disableColour()
-	{
-		if (usingColour())
-			state -= 4;
 	}
 
 	void Vertex::disableTexCoords()
@@ -90,9 +79,9 @@ namespace QG
 	{
 		return position;
 	}
-	Colour Vertex::getColour()
+	Material* Vertex::getMaterial()
 	{
-		return colour;
+		return material;
 	}
 	QM::vector<2> Vertex::getTexCoords()
 	{
@@ -107,11 +96,9 @@ namespace QG
 		position = pos;
 	}
 
-	void Vertex::setColour(Colour col = Colour(0xFFFFFF))
+	void Vertex::setMaterial(Material mat)
 	{
-		if (!usingColour())
-			state += 4;
-		colour = col;
+		material = &mat;
 	}
 	void Vertex::setTexCoords(QM::vector<2> coords)
 	{

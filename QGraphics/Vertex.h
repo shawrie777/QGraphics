@@ -1,6 +1,6 @@
 #pragma once
 #include "Core.h"
-#include "Colour.h"
+#include "Material.h"
 
 namespace QG
 {
@@ -9,7 +9,7 @@ namespace QG
 		friend class VertexBuffer;
 	private:
 		QM::vector<3> position;
-		Colour colour;
+		Material* material;
 		QM::vector<2> texCoords;
 		QM::vector<3> normal;
 		int state = 7;
@@ -17,30 +17,25 @@ namespace QG
 		std::vector<float> getFloats();
 	public:
 		Vertex();
-		Vertex(QM::vector<3> pos, Colour col = GREY);
-		Vertex(QM::vector<3> pos, Colour col, QM::vector<2> tex, QM::vector<3> norm);
+		Vertex(QM::vector<3> pos, Material Mat);
+		Vertex(QM::vector<3> pos, Material Mat, QM::vector<2> tex, QM::vector<3> norm);
 		Vertex(float x, float y, float z);
-		
 
-		bool usingColour();
 		bool usingTexCoords();
 		bool usingNormal();
 
-		void disableColour();
 		void disableTexCoords();
 		void disableNormal();
 
 		QM::vector<3> getPosition();
-		Colour getColour();
+		Material* getMaterial();
 		QM::vector<2> getTexCoords();
 		QM::vector<3> getNormal();
 
 		void setPosition(QM::vector<3> pos);
-		void setColour(Colour col);
+		void setMaterial(Material mat);
 		void setTexCoords(QM::vector<2> coords);
 		void setNormal(QM::vector<3> norm);
-
-		//add transforms
 	};
 
 
