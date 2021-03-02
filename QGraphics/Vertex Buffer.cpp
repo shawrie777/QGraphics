@@ -41,21 +41,16 @@ namespace QG
 
 		Bind();
 
-		for (auto& x : data)
-		{
-			state = std::max(state, x.state);
-		}
-
 		_int64 offset = 0;
 		int attrib = 0;
 
-		int memSize = 12;
+		int memSize = 12;//4*3
 		if (usingColour())
-			memSize += 16;
+			memSize += 16;//4*4
 		if (usingTexCoords())
-			memSize += 8;
+			memSize += 8;//4*2
 		if (usingNormal())
-			memSize += 12;
+			memSize += 12;//4*1
 
 		std::vector<float> floatData;
 
@@ -92,47 +87,12 @@ namespace QG
 			glVertexAttribPointer(attrib, 3, GL_FLOAT, false, memSize, (const void*)offset);
 		}
 
-
-
 		built = true;
 
 	}
 
 	void VertexBuffer::push_back(Vertex v)
 	{
-
-		if (state > v.state)
-		{
-			if (usingColour() && !v.usingColour())
-				v.setColour(GREY);
-			if (usingTexCoords() && !v.usingTexCoords())
-				v.setTexCoords(QM::vector<2>(0.0f, 0.0f));
-			if (usingNormal() && !v.usingNormal())
-				v.setNormal(QM::vector<3>(0.0f, 0.0f, 0.0f));
-		}
-		else if (state < v.state)
-		{
-			if (!built)
-			{
-				if (!usingColour() && v.usingColour())
-					enableColour();
-				if (!usingTexCoords() && v.usingTexCoords())
-					enableTexCoords();
-				if (!usingNormal() && v.usingNormal())
-					enableNormal();
-			}
-			else
-			{
-				if (!usingColour() && v.usingColour())
-					v.disableColour();
-				if (!usingTexCoords() && v.usingTexCoords())
-					v.disableTexCoords();
-				if (!usingNormal() && v.usingNormal())
-					v.disableNormal();
-			}
-		}
-		state = built ? state : std::max(state, v.state);
-
 		data.push_back(v);
 	}
 
@@ -146,68 +106,6 @@ namespace QG
 		return (int)data.size();
 	}
 
-	bool VertexBuffer::usingColour()
-	{
-		return state > 3;
-	}
-	bool VertexBuffer::usingTexCoords()
-	{
-		return state % 4 > 1;
-	}
-	bool VertexBuffer::usingNormal()
-	{
-		return state % 2 == 1;
-	}
-
-	void VertexBuffer::enableColour()
-	{
-		if (!usingColour() && !built)
-			state += 4;
-		for (auto& x : data)
-			x.setColour(GREY);
-	}
-
-	void VertexBuffer::enableTexCoords()
-	{
-		if (!usingTexCoords() && !built)
-			state += 2;
-		for (auto& x : data)
-			x.setTexCoords(QM::vector<2>(0.0f, 0.0f));
-	}
-
-	void VertexBuffer::enableNormal()
-	{
-		if (!usingNormal() && !built)
-			state += 1;
-		for (auto& x : data)
-			x.setNormal(QM::vector<3>(0.0f, 0.0f, 0.0f));
-	}
-
-	void VertexBuffer::disableColour()
-	{
-		if(!built)
-			state -= 4;
-
-		for (auto& x : data)
-			x.disableColour();
-	}
-
-	void VertexBuffer::disableTexCoords()
-	{
-		if (!built)
-			state -= 2;
-
-		for (auto& x : data)
-			x.disableTexCoords();
-	}
-	void VertexBuffer::disableNormal()
-	{
-		if (!built)
-			state -= 1;
-
-		for (auto& x : data)
-			x.disableNormal();
-	}
 	std::vector<Vertex>::iterator VertexBuffer::begin()
 	{
 		return data.begin();

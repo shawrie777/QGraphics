@@ -12,7 +12,6 @@ namespace QG
 		Material* material;
 		QM::vector<2> texCoords;
 		QM::vector<3> normal;
-		int state = 7;
 
 		std::vector<float> getFloats();
 	public:
