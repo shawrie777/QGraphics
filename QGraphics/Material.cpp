@@ -12,4 +12,17 @@ namespace QG
 		Specular = Texture(spec);
 		shininess = shine;
 	}
+	Material::Material() : Material(GRAY, GRAY, 0.0f)
+	{		
+	}
+
+	bool Material::usingDifTex()
+	{
+		return std::holds_alternative<Texture>(Diffuse);
+	}
+
+	bool Material::usingSpecTex()
+	{
+		return std::holds_alternative<Texture>(Specular);
+	}
 }

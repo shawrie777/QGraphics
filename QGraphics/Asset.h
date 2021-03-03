@@ -19,6 +19,7 @@ namespace QG
 		VertexBuffer vertices;
 		IndexBuffer indices;
 		Shader* shader;
+		Material* material;
 
 		Asset(): shader(nullptr) {};
 		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S) {};
