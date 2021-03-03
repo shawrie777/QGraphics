@@ -21,6 +21,24 @@ namespace QG
 		vertices.Bind();
 		indices.Bind();
 		shader->use();
+
+		if (material->usingDifTex())
+		{
+			shader->setInt("DifTex", (int)(std::get_if<unsigned int>(&(material->getDiff()))));
+		}
+		else
+		{
+			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&(material->getDiff()))));			
+		}
+
+		if (material->usingSpecTex())
+		{
+			shader->setInt("SpecTex", (int)(std::get_if<unsigned int>(&(material->getSpec()))));
+		}
+		else
+		{
+			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&(material->getSpec()))));
+		}
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
 	}

@@ -20,6 +20,8 @@ namespace QG
 		Texture(const char* filepath);
 		void Bind();
 		void Unbind();
+
+		const unsigned int getID() { return ID; };
 	};
 
 }

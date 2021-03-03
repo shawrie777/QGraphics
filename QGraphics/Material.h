@@ -19,5 +19,8 @@ namespace QG
 
 		bool usingDifTex();
 		bool usingSpecTex();
+		std::variant<Colour, unsigned int> getDiff();
+		std::variant<Colour, unsigned int> getSpec();
+		float getShininess();
 	};
 }
