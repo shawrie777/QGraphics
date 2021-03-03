@@ -12,4 +12,7 @@ namespace QG
 		Specular = Texture(spec);
 		shininess = shine;
 	}
+	Material::Material() : Material(GRAY, GRAY, 0.0f)
+	{		
+	}
 }

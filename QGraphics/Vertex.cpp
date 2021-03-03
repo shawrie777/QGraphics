@@ -17,72 +17,40 @@ namespace QG
 		//	result.push_back(colour.get(4));
 		//}
 
-		if (usingTexCoords())
-		{
-			result.push_back(texCoords.get(1));
-			result.push_back(texCoords.get(2));
-		}
+		result.push_back(texCoords.get(1));
+		result.push_back(texCoords.get(2));
 
-		if (usingNormal())
-		{
-			result.push_back(normal.get(1));
-			result.push_back(normal.get(2));
-			result.push_back(normal.get(3));
-		}
+		result.push_back(normal.get(1));
+		result.push_back(normal.get(2));
+		result.push_back(normal.get(3));		
 
 		return result;
 	}
 
-	Vertex::Vertex() : Vertex(QM::vector<3>(0.0f, 0.0f, 0.0f), Material(GREY,GREY,0.0f))
+	Vertex::Vertex() : Vertex(QM::vector<3>(0.0f, 0.0f, 0.0f))
 	{
 	}
 
-	Vertex::Vertex(QM::vector<3> pos, Material mat): Vertex(pos,mat,QM::vector<2>(0.0f,0.0f), QM::vector<3>(0.0f,0.0f,0.0f))
-	{
-		state = 4;
+	Vertex::Vertex(QM::vector<3> pos): Vertex(pos,QM::vector<2>(0.0f,0.0f), QM::vector<3>(0.0f,0.0f,0.0f))
+	{	
 	}
 
-	Vertex::Vertex(QM::vector<3> pos, Material mat, QM::vector<2> tex, QM::vector<3> norm): material(&mat)
+	Vertex::Vertex(QM::vector<3> pos, QM::vector<2> tex, QM::vector<3> norm)
 	{
-		state = 7;
 		position = pos;
 		texCoords = tex;
 		normal = norm;
 	}
 
-	Vertex::Vertex(float x, float y, float z) : Vertex(QM::vector<3>(x, y, z), Material(GREY,GREY,0.0f))
+	Vertex::Vertex(float x, float y, float z) : Vertex(QM::vector<3>(x, y, z))
 	{
-	}
-
-	bool Vertex::usingTexCoords()
-	{
-		return state % 4 > 1;
-	}
-	bool Vertex::usingNormal()
-	{
-		return state % 2 == 1;
-	}
-
-	void Vertex::disableTexCoords()
-	{
-		if (usingTexCoords())
-			state -= 2;
-	}
-
-	void Vertex::disableNormal()
-	{
-		if (usingNormal())
-			state -= 1;
 	}
 
 	QM::vector<3> Vertex::getPosition()
 	{
 		return position;
 	}
-	Material* Vertex::getMaterial()
-	{
-		return material;
-	}
+
 	QM::vector<2> Vertex::getTexCoords()
 	{
 		return texCoords;
@@ -96,21 +64,13 @@ namespace QG
 		position = pos;
 	}
 
-	void Vertex::setMaterial(Material mat)
-	{
-		material = &mat;
-	}
 	void Vertex::setTexCoords(QM::vector<2> coords)
 	{
-		if (!usingTexCoords())
-			state += 2;
 		texCoords = coords;
 	}
 
 	void Vertex::setNormal(QM::vector<3> norm)
 	{
-		if (!usingNormal())
-			state += 1;
 		normal = norm.normalise();
 	}
 	float dist(Vertex& v1, Vertex& v2)

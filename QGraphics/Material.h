@@ -15,5 +15,6 @@ namespace QG
 	public:
 		Material(Colour diff, Colour spec, float shine);
 		Material(const char* diff, const char* spec, float shine);
+		Material();
 	};
 }

@@ -2,13 +2,13 @@
 
 namespace QG
 {
-	VertexBuffer::VertexBuffer(): state(0)
+	VertexBuffer::VertexBuffer()
 	{
 		glGenBuffers(1, &BufferID);
 		glGenVertexArrays(1, &ArrayID);
 	}
 
-	VertexBuffer::VertexBuffer(std::initializer_list<Vertex> list) : state(0)
+	VertexBuffer::VertexBuffer(std::initializer_list<Vertex> list)
 	{
 		glGenBuffers(1, &BufferID);
 		glGenVertexArrays(1, &ArrayID);
@@ -44,13 +44,7 @@ namespace QG
 		_int64 offset = 0;
 		int attrib = 0;
 
-		int memSize = 12;//4*3
-		if (usingColour())
-			memSize += 16;//4*4
-		if (usingTexCoords())
-			memSize += 8;//4*2
-		if (usingNormal())
-			memSize += 12;//4*1
+		int memSize = 32;//4*(3 pos + 2 texCoord + 3 norm)
 
 		std::vector<float> floatData;
 
@@ -67,25 +61,16 @@ namespace QG
 		offset += 12;
 		attrib++;
 
-		if (usingColour())
-		{
-			glEnableVertexAttribArray(attrib);
-			glVertexAttribPointer(attrib, 4, GL_FLOAT, false, memSize, (const void*)offset);
-			offset += 16;
-			attrib++;
-		}
-		if (usingTexCoords())
-		{
-			glEnableVertexAttribArray(attrib);
-			glVertexAttribPointer(attrib, 2, GL_FLOAT, false, memSize, (const void*)offset);
-			offset += 8;
-			attrib++;
-		}
-		if (usingNormal())
-		{
-			glEnableVertexAttribArray(attrib);
-			glVertexAttribPointer(attrib, 3, GL_FLOAT, false, memSize, (const void*)offset);
-		}
+		//tex coords
+		glEnableVertexAttribArray(attrib);
+		glVertexAttribPointer(attrib, 2, GL_FLOAT, false, memSize, (const void*)offset);
+		offset += 8;
+		attrib++;
+		
+		//normal
+		glEnableVertexAttribArray(attrib);
+		glVertexAttribPointer(attrib, 3, GL_FLOAT, false, memSize, (const void*)offset);
+		
 
 		built = true;
 
