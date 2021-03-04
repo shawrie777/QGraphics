@@ -39,6 +39,7 @@ namespace QG
 
 		double angle = 360.0 / edges;
 		QM::vector<3> pos(1.0f, 0.0f, 0.0f);
+		QM::vector<3> norm(0.0f, 0.0f, 1.0f);
 
 		QM::matrix<3, 3> rot = QM::identity<3>();
 		rot.set(1, 1, (float)cos(QM::rad(angle)));
@@ -46,9 +47,23 @@ namespace QG
 		rot.set(2, 1, (float)sin(QM::rad(angle)));
 		rot.set(2, 2, (float)cos(QM::rad(angle)));
 
+		//just for squares
+		QM::matrix<4, 4> A;
+		A.set(1, 1, 0.5);
+		A.set(1, 2, -0.5);
+		A.set(2, 1, 0.5);
+		A.set(2, 2, 0.5);
+
+		QM::vector<2> B;
+		B.set(1, 0.5);
+		B.set(2, 0.5);
+
 		for (int i = 0; i < edges; i++)
 		{
-			vertices.push_back(QG::Vertex(pos));
+			QM::vector<2> Tcoord((pos.get(1) + 1.0f)/2.0f, (pos.get(2) + 1.0f)/2.0f);
+			if (edges == 4)
+				Tcoord = A * Tcoord + B;
+			vertices.push_back(QG::Vertex(pos, Tcoord, norm));
 			pos = rot * pos;
 			indices.AddIndices({ i });
 		}
