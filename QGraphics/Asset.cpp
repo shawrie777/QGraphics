@@ -22,22 +22,32 @@ namespace QG
 		indices.Bind();
 		shader->use();
 
+		auto temp = material->getDiff();
+
 		if (material->usingDifTex())
-		{
-			shader->setInt("DifTex", (int)(std::get_if<unsigned int>(&(material->getDiff()))));
+		{			
+			shader->setInt("DifTex", *(int*)(std::get_if<unsigned int>(&temp)));
+			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
+			shader->setVector<4>("DifCol", noCol);
 		}
 		else
 		{
-			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&(material->getDiff()))));			
+			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
+			shader->setInt("DifTex", -1);
 		}
+
+		temp = material->getSpec();
 
 		if (material->usingSpecTex())
 		{
-			shader->setInt("SpecTex", (int)(std::get_if<unsigned int>(&(material->getSpec()))));
+			shader->setInt("SpecTex", *(int*)(std::get_if<unsigned int>(&temp)));
+			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
+			shader->setVector<4>("SpecCol", noCol);
 		}
 		else
 		{
-			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&(material->getSpec()))));
+			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
+			shader->setInt("SpecTex", -1);
 		}
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);

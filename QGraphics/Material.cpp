@@ -31,6 +31,8 @@ namespace QG
 			return value->getID();
 		else if (auto value = std::get_if<Colour>(&Diffuse))
 			return *value;
+		else
+			throw;
 	}
 
 	std::variant<Colour, unsigned int> Material::getSpec()
@@ -39,6 +41,8 @@ namespace QG
 			return value->getID();
 		else if (auto value = std::get_if<Colour>(&Specular))
 			return *value;
+		else
+			throw;
 	}
 	float Material::getShininess()
 	{

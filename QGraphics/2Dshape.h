@@ -16,7 +16,6 @@ namespace QG
 	public:
 		void build() override;
 		shape2D();
-		void setColour(Colour col);
 	};
 
 	template<int edges>
@@ -61,14 +60,6 @@ namespace QG
 
 		drawType = GL_TRIANGLE_FAN;
 
-	}
-	template<int edges>
-	inline void shape2D<edges>::setColour(Colour col)
-	{
-		for (auto& x : vertices)
-		{
-			x.setColour(col);
-		}
 	}
 
 

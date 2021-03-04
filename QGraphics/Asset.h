@@ -21,9 +21,9 @@ namespace QG
 		Shader* shader;
 		Material* material;
 
-		Asset(): shader(nullptr) {};
-		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S) {};
-		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader() {};
+		Asset(): shader(nullptr), material(nullptr) {};
+		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S), material(nullptr) {};
+		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader(), material(nullptr) {};
 		~Asset() {};
 
 		virtual void build();

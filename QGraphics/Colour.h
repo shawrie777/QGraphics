@@ -10,6 +10,7 @@ namespace QG
 		Colour();
 		Colour(float r, float g, float b, float alpha = 1.0f);
 		Colour(int hex);
+		~Colour() {};
 
 		float red();
 		float green();
