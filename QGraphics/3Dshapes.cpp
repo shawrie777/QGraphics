@@ -23,42 +23,40 @@ namespace QG
 		QM::vector<3> BBR( 1.0f, -1.0f, -1.0f);
 		QM::vector<3> BBL(-1.0f, -1.0f, -1.0f);
 
-		vertices.push_back(QG::Vertex(TFR, zero, topNorm));
-		vertices.push_back(QG::Vertex(TFR, zero, frontNorm));
-		vertices.push_back(QG::Vertex(TFR, zero, rightNorm)); //2
+		vertices.push_back(QG::Vertex(TFR, QM::vector<2>(0.5f, 2.0f / 3.0f), topNorm));
+		vertices.push_back(QG::Vertex(TFR, QM::vector<2>(0.5f, 2.0f / 3.0f), frontNorm));
+		vertices.push_back(QG::Vertex(TFR, QM::vector<2>(0.5f, 2.0f / 3.0f), rightNorm)); //2
 
-		vertices.push_back(QG::Vertex(TFL, zero, topNorm));
-		vertices.push_back(QG::Vertex(TFL, zero, frontNorm));
-		vertices.push_back(QG::Vertex(TFL, zero, leftNorm)); //5
+		vertices.push_back(QG::Vertex(TFL, QM::vector<2>(0.25f, 2.0f / 3.0f), topNorm));
+		vertices.push_back(QG::Vertex(TFL, QM::vector<2>(0.25f, 2.0f / 3.0f), frontNorm));
+		vertices.push_back(QG::Vertex(TFL, QM::vector<2>(0.25f, 2.0f / 3.0f), leftNorm)); //5
 
-		vertices.push_back(QG::Vertex(TBR, zero, topNorm));
-		vertices.push_back(QG::Vertex(TBR, zero, backNorm));
-		vertices.push_back(QG::Vertex(TBR, zero, rightNorm)); //8
+		vertices.push_back(QG::Vertex(TBR, QM::vector<2>(0.5f, 1.0f), topNorm));
+		vertices.push_back(QG::Vertex(TBR, QM::vector<2>(0.75f, 2.0f / 3.0f), backNorm));
+		vertices.push_back(QG::Vertex(TBR, QM::vector<2>(0.75f, 2.0f / 3.0f), rightNorm)); //8
 
-		vertices.push_back(QG::Vertex(TBL, zero, topNorm));
-		vertices.push_back(QG::Vertex(TBL, zero, backNorm));
-		vertices.push_back(QG::Vertex(TBL, zero, leftNorm)); //11
+		vertices.push_back(QG::Vertex(TBL, QM::vector<2>(0.25f, 1.0f), topNorm));
+		vertices.push_back(QG::Vertex(TBL, QM::vector<2>(1.0f, 2.0f / 3.0f), backNorm));
+		vertices.push_back(QG::Vertex(TBL, QM::vector<2>(0.0f, 2.0f / 3.0f), leftNorm)); //11
 		
-		vertices.push_back(QG::Vertex(BFR, zero, bottomNorm));
-		vertices.push_back(QG::Vertex(BFR, zero, frontNorm));
-		vertices.push_back(QG::Vertex(BFR, zero, rightNorm)); //14
+		vertices.push_back(QG::Vertex(BFR, QM::vector<2>(0.5f, 1.0f / 3.0f), bottomNorm));
+		vertices.push_back(QG::Vertex(BFR, QM::vector<2>(0.5f, 1.0f / 3.0f), frontNorm));
+		vertices.push_back(QG::Vertex(BFR, QM::vector<2>(0.5f, 1.0f / 3.0f), rightNorm)); //14
 
-		vertices.push_back(QG::Vertex(BFL, zero, bottomNorm));
-		vertices.push_back(QG::Vertex(BFL, zero, frontNorm));
-		vertices.push_back(QG::Vertex(BFL, zero, leftNorm)); //17
+		vertices.push_back(QG::Vertex(BFL, QM::vector<2>(0.25f, 1.0f / 3.0f), bottomNorm));
+		vertices.push_back(QG::Vertex(BFL, QM::vector<2>(0.25f, 1.0f / 3.0f), frontNorm));
+		vertices.push_back(QG::Vertex(BFL, QM::vector<2>(0.25f, 1.0f / 3.0f), leftNorm)); //17
+		
+		vertices.push_back(QG::Vertex(BBR, QM::vector<2>(0.5f, 0.0f), bottomNorm));
+		vertices.push_back(QG::Vertex(BBR, QM::vector<2>(0.75f, 1.0f / 3.0f), backNorm));
+		vertices.push_back(QG::Vertex(BBR, QM::vector<2>(0.75f, 1.0f / 3.0f), rightNorm)); //20
 
-		vertices.push_back(QG::Vertex(BBR, zero, bottomNorm));
-		vertices.push_back(QG::Vertex(BBR, zero, backNorm));
-		vertices.push_back(QG::Vertex(BBR, zero, rightNorm)); //20
-
-		vertices.push_back(QG::Vertex(BBL, zero, bottomNorm));
-		vertices.push_back(QG::Vertex(BBL, zero, backNorm));
-		vertices.push_back(QG::Vertex(BBL, zero, leftNorm)); //23
+		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(0.25f, 0.0f), bottomNorm));
+		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(0.0f, 1.0f / 3.0f), backNorm));
+		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(1.0f, 1.0f / 3.0f), leftNorm)); //23
 		
 		indices.AddIndices({16,13,1,16,4,1,3,9,6,3,6,0,14,2,8,14,8,20,23,11,5,23,17,5,21,15,12,21,12,18,22,19,10,10,7,19});		
 	}
-
-
 
 	tetrahedron::tetrahedron()
 	{
@@ -92,21 +90,21 @@ namespace QG
 
 		QM::vector<2> zero(0.0f, 0.0f);
 
-		vertices.push_back(QG::Vertex(point0, zero, norm0));
-		vertices.push_back(QG::Vertex(point1, zero, norm0));
-		vertices.push_back(QG::Vertex(point2, zero, norm0));//2
+		vertices.push_back(QG::Vertex(point0, QM::vector<2>(0.0f, 0.0f), norm0));
+		vertices.push_back(QG::Vertex(point1, QM::vector<2>(0.5f, 0.0f), norm0));
+		vertices.push_back(QG::Vertex(point2, QM::vector<2>(0.25f, 0.5f), norm0));//2
 
-		vertices.push_back(QG::Vertex(point0, zero, norm1));
-		vertices.push_back(QG::Vertex(point1, zero, norm1));
-		vertices.push_back(QG::Vertex(point3, zero, norm1));//5
+		vertices.push_back(QG::Vertex(point0, QM::vector<2>(1.0f, 0.0f), norm1));
+		vertices.push_back(QG::Vertex(point1, QM::vector<2>(0.5f, 0.0f), norm1));
+		vertices.push_back(QG::Vertex(point3, QM::vector<2>(0.75f, 0.5f), norm1));//5
 
-		vertices.push_back(QG::Vertex(point0, zero, norm2));
-		vertices.push_back(QG::Vertex(point2, zero, norm2));
-		vertices.push_back(QG::Vertex(point3, zero, norm2));//8
+		vertices.push_back(QG::Vertex(point0, QM::vector<2>(0.5f, 1.0f), norm2));
+		vertices.push_back(QG::Vertex(point2, QM::vector<2>(0.25f, 0.5f), norm2));
+		vertices.push_back(QG::Vertex(point3, QM::vector<2>(0.75f, 0.5f), norm2));//8
 
-		vertices.push_back(QG::Vertex(point1, zero, norm3));
-		vertices.push_back(QG::Vertex(point2, zero, norm3));
-		vertices.push_back(QG::Vertex(point3, zero, norm3));//11
+		vertices.push_back(QG::Vertex(point1, QM::vector<2>(0.5f, 0.0f), norm3));
+		vertices.push_back(QG::Vertex(point2, QM::vector<2>(0.25f, 0.5f), norm3));
+		vertices.push_back(QG::Vertex(point3, QM::vector<2>(0.75f, 0.5f), norm3));//11
 
 		indices.AddIndices({ 0,1,2,3,4,5,6,7,8,9,10,11 });
 	}
