@@ -1,4 +1,5 @@
 #include "Asset.h"
+#include "Light.h"
 
 namespace QG
 {
@@ -48,6 +49,19 @@ namespace QG
 		{
 			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
 			shader->setInt("SpecTex", -1);
+		}
+
+
+		//fetch lights
+		shader->setInt("spotLightCount", spotLights.size());
+		for (auto i = spotLights.begin(); i != spotLights.end(); i++)
+		{
+			shader->setVector<3>("SLights.position", (*i)->getPosition());
+			shader->setVector<3>("SLights.direction", (*i)->getDirection());
+			shader->setFloat("SLights.angle", (*i)->getAngle());
+			shader->setFloat("SLights.outerAngle", (*i)->getOuterAngle());
+			shader->setVector<4>("SLights.colour", (*i)->getColour());
+			shader->setVector<3>("SLights.attenuation", (*i)->getAttenuation());
 		}
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);

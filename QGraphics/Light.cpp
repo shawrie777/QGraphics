@@ -4,9 +4,7 @@ namespace QG
 {
     Light::Light() : m_col(WHITE), m_position(QM::vector<3>(0.0f,0.0f,0.0f)), m_asset(nullptr)
     {
-        m_attenuation.push_back(0.0f);
-        m_attenuation.push_back(0.0f);
-        m_attenuation.push_back(1.0f);        
+        m_attenuation.set(3, 1.0f);
     }
 
     Colour Light::getColour() const
@@ -42,7 +40,7 @@ namespace QG
     {
         m_asset = nullptr;
     }
-    std::vector<float> Light::getAttenuation() const
+    QM::vector<3> Light::getAttenuation() const
     {
         return m_attenuation;
     }
@@ -51,14 +49,14 @@ namespace QG
         if (quadratic < 0.0f || linear < 0.0f || constant <= 0.0f)
             throw ("Invalid attenuation values.");
 
-        m_attenuation[0] = quadratic;
-        m_attenuation[1] = linear;
-        m_attenuation[2] = constant;
+        m_attenuation.set(1, quadratic);
+        m_attenuation.set(2, linear);
+        m_attenuation.set(3, constant);
     }
 
     spotLight::spotLight(QM::vector<3> position, QM::vector<3> direction, float angle)
     {
-        lights.push_back(this);
+        spotLights.push_back(this);
 
         m_col = WHITE;
         m_position = position;
@@ -70,10 +68,10 @@ namespace QG
 
     spotLight::~spotLight()
     {
-        for (auto i = lights.begin(); i != lights.end(); i++)
+        for (auto i = spotLights.begin(); i != spotLights.end(); i++)
             if (*i == this)
             {
-                lights.erase(i);
+                spotLights.erase(i);
                 break;
             }
     }
@@ -122,7 +120,7 @@ namespace QG
 
     directionalLight::directionalLight(QM::vector<3> position, QM::vector<3> direction)
     {
-        lights.push_back(this);
+        directionalLights.push_back(this);
 
         m_col = WHITE;
         m_position = position;
@@ -132,10 +130,10 @@ namespace QG
 
     directionalLight::~directionalLight()
     {
-        for (auto i = lights.begin(); i != lights.end(); i++)
+        for (auto i = directionalLights.begin(); i != directionalLights.end(); i++)
             if (*i == this)
             {
-                lights.erase(i);
+                directionalLights.erase(i);
                 break;
             }
     }
@@ -167,6 +165,7 @@ namespace QG
     //must use 2D shape
     areaLight::areaLight(Asset& shape)
     {
+        areaLights.push_back(this);
         m_area = &shape;
         m_col = WHITE;
         m_position = m_area->getPosition();
@@ -174,10 +173,10 @@ namespace QG
 
     areaLight::~areaLight()
     {
-        for (auto i = lights.begin(); i != lights.end(); i++)
+        for (auto i = areaLights.begin(); i != areaLights.end(); i++)
             if (*i == this)
             {
-                lights.erase(i);
+                areaLights.erase(i);
                 break;
             }
     }
@@ -194,21 +193,21 @@ namespace QG
 
     pointLight::pointLight()
     {
-        lights.push_back(this);
+        pointLights.push_back(this);
     }
 
     pointLight::pointLight(QM::vector<3> position)
     {
-        lights.push_back(this);
+        pointLights.push_back(this);
         m_position = position;
     }
 
     pointLight::~pointLight()
     {
-        for (auto i = lights.begin(); i != lights.end(); i++)
+        for (auto i = pointLights.begin(); i != pointLights.end(); i++)
             if (*i == this)
             {
-                lights.erase(i);
+                pointLights.erase(i);
                 break;
             }
     }

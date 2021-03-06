@@ -11,7 +11,7 @@ namespace QG
 		Colour m_col;
 		QM::vector<3> m_position;
 		Asset* m_asset;
-		std::vector<float> m_attenuation;
+		QM::vector<3> m_attenuation;
 	public:
 		Light();
 		virtual ~Light() {};
@@ -23,11 +23,9 @@ namespace QG
 		virtual Asset* getAsset() = 0;
 		virtual void setAsset(Asset* A) = 0;
 		virtual void removeAsset() = 0;
-		virtual std::vector<float> getAttenuation() const = 0;
+		virtual QM::vector<3> getAttenuation() const = 0;
 		virtual void setAttenuation(float quadratic, float linear, float constant);
 	};
-
-	std::vector<Light*> lights;
 
 	class spotLight : public Light
 	{
@@ -80,4 +78,9 @@ namespace QG
 		QM::vector<3> getPosition() const;
 		void setPosition(QM::vector<3> pos);
 	};
+
+	std::vector<spotLight*> spotLights;
+	std::vector<pointLight*> pointLights;
+	std::vector<directionalLight*> directionalLights;
+	std::vector<areaLight*> areaLights;
 }

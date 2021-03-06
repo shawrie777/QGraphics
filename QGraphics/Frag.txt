@@ -1,7 +1,20 @@
 #version 330 core
 out vec4 FragColor;
-in vec4 Col;
+
+struct spotLight {
+	vec3 position;
+	vec3 direction;
+	float angle;
+	float outerAngle;
+	vec4 colour;
+	vec3 attenuation;
+}
+
+uniform int spotLightCount;
+uniform spotLight SLights[spotLightCount];
+
+
 void main()
 {
-FragColor = Col;
+
 }
