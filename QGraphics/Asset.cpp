@@ -1,5 +1,6 @@
 #include "Asset.h"
 #include "Light.h"
+#include <string>
 
 namespace QG
 {
@@ -55,15 +56,35 @@ namespace QG
 		//fetch lights
 		shader->setInt("spotLightCount", spotLights.size());
 		for (auto i = spotLights.begin(); i != spotLights.end(); i++)
-		{
-			shader->setVector<3>("SLights.position", (*i)->getPosition());
-			shader->setVector<3>("SLights.direction", (*i)->getDirection());
-			shader->setFloat("SLights.angle", (*i)->getAngle());
-			shader->setFloat("SLights.outerAngle", (*i)->getOuterAngle());
-			shader->setVector<4>("SLights.colour", (*i)->getColour());
-			shader->setVector<3>("SLights.attenuation", (*i)->getAttenuation());
+		{			
+			auto j = std::to_string(i - spotLights.begin());
+			shader->setVector<3>("SLights[" + j + "].position", (*i)->getPosition());
+			shader->setVector<3>("SLights[" + j + "].direction", (*i)->getDirection());
+			shader->setFloat("SLights[" + j + "].angle", (*i)->getAngle());
+			shader->setFloat("SLights[" + j + "].outerAngle", (*i)->getOuterAngle());
+			shader->setVector<4>("SLights[" + j + "].colour", (*i)->getColour());
+			shader->setVector<3>("SLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
 		
+		shader->setInt("pointLightCount", pointLights.size());
+		for (auto i = pointLights.begin(); i != pointLights.end(); i++)
+		{
+			auto j = std::to_string(i - pointLights.begin());
+			shader->setVector<3>("PLights[" + j + "].position", (*i)->getPosition());
+			shader->setVector<4>("PLights[" + j + "].colour", (*i)->getColour());
+			shader->setVector<3>("PLights[" + j + "].attenuation", (*i)->getAttenuation());
+		}
+
+		shader->setInt("dirLightCount", directionalLights.size());
+		for (auto i = directionalLights.begin(); i != directionalLights.end(); i++)
+		{
+			auto j = std::to_string(i - directionalLights.begin());
+			shader->setVector<3>("DLights[" + j + "].position", (*i)->getPosition());
+			shader->setVector<4>("DLights[" + j + "].colour", (*i)->getColour());
+			shader->setVector<3>("DLights[" + j + "].direction", (*i)->getDirection());
+			shader->setVector<3>("DLights[" + j + "].attenuation", (*i)->getAttenuation());
+		}
+
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
 	}
 

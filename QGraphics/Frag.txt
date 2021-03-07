@@ -10,9 +10,33 @@ struct spotLight {
 	vec3 attenuation;
 }
 
+struct pointLight {
+	vec3 position;
+	vec4 colour;
+	vec3 attenuation;
+}
+
+struct dirLight {
+	vec3 position;
+	vec4 colour;
+	vec3 direction;
+	vec3 attenuation;
+}
+
+struct areaLight {
+	vec3 position;
+	vec4 colour;
+	vec3 attenuation;
+}
+
 uniform int spotLightCount;
 uniform spotLight SLights[spotLightCount];
 
+uniform int pointLightCount;
+uniform pointLight PLights[pointLightCount];
+
+uniform int dirLightCount;
+uniform dirLight DLights[dirLightCount];
 
 void main()
 {
