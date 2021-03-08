@@ -23,12 +23,6 @@ struct dirLight {
 	vec3 attenuation;
 }
 
-struct areaLight {
-	vec3 position;
-	vec4 colour;
-	vec3 attenuation;
-}
-
 uniform int spotLightCount;
 uniform spotLight SLights[spotLightCount];
 
@@ -37,6 +31,12 @@ uniform pointLight PLights[pointLightCount];
 
 uniform int dirLightCount;
 uniform dirLight DLights[dirLightCount];
+
+uniform vec4 DifCol;
+uniform vec4 SpecCol;
+
+uniform sampler2D DifTex;
+uniform sampler2D SpecTex;
 
 void main()
 {
