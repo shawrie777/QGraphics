@@ -1,3 +1,4 @@
+#include "2Dshape.h"
 #include "Light.h"
 
 namespace QG
@@ -6,6 +7,8 @@ namespace QG
     {
         m_attenuation.set(3, 1.0f);
     }
+
+    Light::~Light() {};
 
     Colour Light::getColour() const
     {

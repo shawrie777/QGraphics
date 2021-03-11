@@ -79,6 +79,10 @@ namespace QG
 	{
 		return proj;
 	}
+	QM::vector<3> Camera::getPosition()
+	{
+		return m_position;
+	}
 	void Camera::enable_hMove()
 	{
 		hMove = true;

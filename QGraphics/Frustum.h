@@ -84,9 +84,6 @@ namespace QG
 				indices.AddIndices({*first, *y, *(y+1)});
 			}
 		}
-
-		vertices.disableTexCoords();
-
 	}
 
 	template<int baseSides>

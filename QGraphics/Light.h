@@ -1,7 +1,7 @@
 #pragma once
 #include "Core.h"
 #include "Colour.h"
-#include "2Dshape.h"
+//#include "Asset.h"
 
 namespace QG
 {
@@ -12,18 +12,20 @@ namespace QG
 		QM::vector<3> m_position;
 		Asset* m_asset;
 		QM::vector<3> m_attenuation;
+
+
 	public:
 		Light();
-		virtual ~Light() {};
+		~Light();
 
-		virtual Colour getColour() const = 0;
-		virtual void setColour(Colour col) = 0;
-		virtual QM::vector<3> getPosition() const = 0;
-		virtual void setPosition(QM::vector<3> pos) = 0;
-		virtual Asset* getAsset() = 0;
-		virtual void setAsset(Asset* A) = 0;
-		virtual void removeAsset() = 0;
-		virtual QM::vector<3> getAttenuation() const = 0;
+		virtual Colour getColour() const;
+		virtual void setColour(Colour col);
+		virtual QM::vector<3> getPosition() const;
+		virtual void setPosition(QM::vector<3> pos);
+		virtual Asset* getAsset();
+		virtual void setAsset(Asset* A);
+		virtual void removeAsset();
+		virtual QM::vector<3> getAttenuation() const;
 		virtual void setAttenuation(float quadratic, float linear, float constant);
 	};
 

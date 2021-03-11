@@ -1,6 +1,7 @@
 #include "Asset.h"
 #include "Light.h"
 #include <string>
+#include "Window.h"
 
 namespace QG
 {
@@ -23,6 +24,13 @@ namespace QG
 		vertices.Bind();
 		indices.Bind();
 		shader->use();
+		
+		//get current camera from current window
+		auto context = glfwGetCurrentContext();
+		window* win = (window*)(glfwGetWindowUserPointer(context));
+		shader->setVector<3>("viewPos", win->cam->getPosition());
+		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
+		shader->setMatrix<4, 4>("model", modelMatrix());
 
 		auto temp = material->getDiff();
 
@@ -55,7 +63,7 @@ namespace QG
 		shader->setFloat("shininess", material->getShininess());
 
 		//fetch lights
-		shader->setInt("spotLightCount", spotLights.size());
+		shader->setInt("spotLightCount", (int)spotLights.size());
 		for (auto i = spotLights.begin(); i != spotLights.end(); i++)
 		{			
 			auto j = std::to_string(i - spotLights.begin());
@@ -67,7 +75,7 @@ namespace QG
 			shader->setVector<3>("SLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
 		
-		shader->setInt("pointLightCount", pointLights.size());
+		shader->setInt("pointLightCount", (int)pointLights.size());
 		for (auto i = pointLights.begin(); i != pointLights.end(); i++)
 		{
 			auto j = std::to_string(i - pointLights.begin());
@@ -76,7 +84,7 @@ namespace QG
 			shader->setVector<3>("PLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
 
-		shader->setInt("dirLightCount", directionalLights.size());
+		shader->setInt("dirLightCount", (int)directionalLights.size());
 		for (auto i = directionalLights.begin(); i != directionalLights.end(); i++)
 		{
 			auto j = std::to_string(i - directionalLights.begin());

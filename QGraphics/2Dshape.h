@@ -48,7 +48,7 @@ namespace QG
 		rot.set(2, 2, (float)cos(QM::rad(angle)));
 
 		//just for squares
-		QM::matrix<4, 4> A;
+		QM::matrix<2, 2> A;
 		A.set(1, 1, 0.5);
 		A.set(1, 2, -0.5);
 		A.set(2, 1, 0.5);

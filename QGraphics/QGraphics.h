@@ -9,3 +9,4 @@
 #include "Texture.h"
 #include "3Dshapes.h"
 #include "Prism.h"
+#include "Light.h"

@@ -7,7 +7,7 @@ namespace QG
 		if (Type == camType::perspective)
 		{
 			this->set(1, 1, 1.0f / (float)(tan(QM::rad(m_fovX) / 2.0f)));
-			this->set(2, 2, m_aspect / (float)(tan(QM::rad(m_fovX) / 2.0f)));
+			this->set(2, 2, (float)m_aspect / (float)(tan(QM::rad(m_fovX) / 2.0f)));
 			this->set(3, 3, ((float)m_far + (float)m_near) / ((float)m_near - (float)m_far));
 			this->set(3, 4, 2 * (float)m_far * (float)m_near / ((float)m_near - (float)m_far));
 			this->set(4, 3, -1.0f);

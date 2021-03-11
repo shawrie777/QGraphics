@@ -3,8 +3,6 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 
-
-
 namespace QG
 {
 	class Asset

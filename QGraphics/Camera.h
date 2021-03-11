@@ -48,6 +48,8 @@ namespace QG
 		QM::matrix<4, 4> viewMatrix();
 		const QM::matrix<4, 4> projMatrix() const;
 
+		QM::vector<3> getPosition();
+
 		float getPitch() { return Pitch; };
 		float getYaw() { return Yaw; };
 		float getFOV() { return fov; };
