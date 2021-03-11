@@ -38,6 +38,32 @@ uniform vec4 SpecCol;
 uniform sampler2D DifTex;
 uniform sampler2D SpecTex;
 
+uniform float shininess;
+
+vec3 matDiffuse;
+vec3 matSpecular;
+
+vec3 CalcDirLight(dirLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+	vec3 lightDir = normalize(-L.direction);
+	float diff = max(dot(normal, lightDir),0.0);
+	vec3 reflectDir = reflect(-lightDir,normal);
+	float spec = pow(max(dot(viewDir,reflectDir),0.0), shininess);
+	
+	vec3 ambient = 0.1 * L.colour * MatDiffuse;
+	vec3 diffuse = L.colour * diff * MatDiffuse;
+	vec3 specular = L.colour * spec * MatSpecular;
+
+	float distance = length(L.position - fragPos);
+	float attenuation = 1.0 / (L.attenuation.x * distance * distance + L.attenuation.y * distance + L.attenuation.z);
+
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
+
+	return (ambient + diffuse + specular);
+}
+
 void main()
 {
 

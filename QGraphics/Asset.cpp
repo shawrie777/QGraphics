@@ -52,6 +52,7 @@ namespace QG
 			shader->setInt("SpecTex", -1);
 		}
 
+		shader->setFloat("shininess", material->getShininess());
 
 		//fetch lights
 		shader->setInt("spotLightCount", spotLights.size());
