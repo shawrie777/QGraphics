@@ -81,8 +81,13 @@ namespace QG
 		void setPosition(QM::vector<3> pos);
 	};
 
-	std::vector<spotLight*> spotLights;
-	std::vector<pointLight*> pointLights;
-	std::vector<directionalLight*> directionalLights;
-	std::vector<areaLight*> areaLights;
+
+}
+
+namespace lighting
+{
+	extern std::vector<QG::spotLight*> spotLights;
+	extern std::vector<QG::pointLight*> pointLights;
+	extern std::vector<QG::directionalLight*> directionalLights;
+	extern std::vector<QG::areaLight*> areaLights;
 }

@@ -1,6 +1,15 @@
 #include "2Dshape.h"
 #include "Light.h"
 
+namespace lighting
+{
+    std::vector<QG::spotLight*> spotLights;
+    std::vector<QG::pointLight*> pointLights;
+    std::vector<QG::directionalLight*> directionalLights;
+    std::vector<QG::areaLight*> areaLights;
+}
+
+
 namespace QG
 {
     Light::Light() : m_col(WHITE), m_position(QM::vector<3>(0.0f,0.0f,0.0f)), m_asset(nullptr)
@@ -59,7 +68,7 @@ namespace QG
 
     spotLight::spotLight(QM::vector<3> position, QM::vector<3> direction, float angle)
     {
-        spotLights.push_back(this);
+        lighting::spotLights.push_back(this);
 
         m_col = WHITE;
         m_position = position;
@@ -71,10 +80,10 @@ namespace QG
 
     spotLight::~spotLight()
     {
-        for (auto i = spotLights.begin(); i != spotLights.end(); i++)
+        for (auto i = lighting::spotLights.begin(); i != lighting::spotLights.end(); i++)
             if (*i == this)
             {
-                spotLights.erase(i);
+                lighting::spotLights.erase(i);
                 break;
             }
     }
@@ -123,7 +132,7 @@ namespace QG
 
     directionalLight::directionalLight(QM::vector<3> position, QM::vector<3> direction)
     {
-        directionalLights.push_back(this);
+        lighting::directionalLights.push_back(this);
 
         m_col = WHITE;
         m_position = position;
@@ -133,10 +142,10 @@ namespace QG
 
     directionalLight::~directionalLight()
     {
-        for (auto i = directionalLights.begin(); i != directionalLights.end(); i++)
+        for (auto i = lighting::directionalLights.begin(); i != lighting::directionalLights.end(); i++)
             if (*i == this)
             {
-                directionalLights.erase(i);
+                lighting::directionalLights.erase(i);
                 break;
             }
     }
@@ -168,7 +177,7 @@ namespace QG
     //must use 2D shape
     areaLight::areaLight(Asset& shape)
     {
-        areaLights.push_back(this);
+        lighting::areaLights.push_back(this);
         m_area = &shape;
         m_col = WHITE;
         m_position = m_area->getPosition();
@@ -176,10 +185,10 @@ namespace QG
 
     areaLight::~areaLight()
     {
-        for (auto i = areaLights.begin(); i != areaLights.end(); i++)
+        for (auto i = lighting::areaLights.begin(); i != lighting::areaLights.end(); i++)
             if (*i == this)
             {
-                areaLights.erase(i);
+                lighting::areaLights.erase(i);
                 break;
             }
     }
@@ -196,22 +205,23 @@ namespace QG
 
     pointLight::pointLight()
     {
-        pointLights.push_back(this);
+        lighting::pointLights.push_back(this);
     }
 
     pointLight::pointLight(QM::vector<3> position)
     {
-        pointLights.push_back(this);
+        lighting::pointLights.push_back(this);
         m_position = position;
     }
 
     pointLight::~pointLight()
     {
-        for (auto i = pointLights.begin(); i != pointLights.end(); i++)
+        for (auto i = lighting::pointLights.begin(); i != lighting::pointLights.end(); i++)
             if (*i == this)
             {
-                pointLights.erase(i);
+                lighting::pointLights.erase(i);
                 break;
             }
     }
 }
+

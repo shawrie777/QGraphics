@@ -43,7 +43,7 @@ namespace QG
 		else
 		{
 			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
-			shader->setInt("DifTex", -1);
+			shader->setInt("DifTex", 31);
 		}
 
 		temp = material->getSpec();
@@ -57,16 +57,16 @@ namespace QG
 		else
 		{
 			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
-			shader->setInt("SpecTex", -1);
+			shader->setInt("SpecTex", 31);
 		}
 
 		shader->setFloat("shininess", material->getShininess());
 
 		//fetch lights
-		shader->setInt("spotLightCount", (int)spotLights.size());
-		for (auto i = spotLights.begin(); i != spotLights.end(); i++)
+		shader->setInt("spotLightCount", (int)lighting::spotLights.size());
+		for (auto i = lighting::spotLights.begin(); i != lighting::spotLights.end(); i++)
 		{			
-			auto j = std::to_string(i - spotLights.begin());
+			auto j = std::to_string(i - lighting::spotLights.begin());
 			shader->setVector<3>("SLights[" + j + "].position", (*i)->getPosition());
 			shader->setVector<3>("SLights[" + j + "].direction", (*i)->getDirection());
 			shader->setFloat("SLights[" + j + "].angle", (*i)->getAngle());
@@ -75,25 +75,25 @@ namespace QG
 			shader->setVector<3>("SLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
 		
-		shader->setInt("pointLightCount", (int)pointLights.size());
-		for (auto i = pointLights.begin(); i != pointLights.end(); i++)
+		shader->setInt("pointLightCount", (int)lighting::pointLights.size());
+		for (auto i = lighting::pointLights.begin(); i != lighting::pointLights.end(); i++)
 		{
-			auto j = std::to_string(i - pointLights.begin());
+			auto j = std::to_string(i - lighting::pointLights.begin());
 			shader->setVector<3>("PLights[" + j + "].position", (*i)->getPosition());
 			shader->setVector<4>("PLights[" + j + "].colour", (*i)->getColour());
 			shader->setVector<3>("PLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
 
-		shader->setInt("dirLightCount", (int)directionalLights.size());
-		for (auto i = directionalLights.begin(); i != directionalLights.end(); i++)
+		shader->setInt("dirLightCount", (int)lighting::directionalLights.size());
+		for (auto i = lighting::directionalLights.begin(); i != lighting::directionalLights.end(); i++)
 		{
-			auto j = std::to_string(i - directionalLights.begin());
+			auto j = std::to_string(i - lighting::directionalLights.begin());
 			shader->setVector<3>("DLights[" + j + "].position", (*i)->getPosition());
 			shader->setVector<4>("DLights[" + j + "].colour", (*i)->getColour());
 			shader->setVector<3>("DLights[" + j + "].direction", (*i)->getDirection());
 			shader->setVector<3>("DLights[" + j + "].attenuation", (*i)->getAttenuation());
 		}
-
+		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
 	}
 
