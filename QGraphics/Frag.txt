@@ -57,14 +57,14 @@ vec4 CalcDirLight(dirLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
 	vec3 lightDir = normalize(-L.direction);
 	float diff = max(dot(normal, lightDir),0.0);
 	vec3 reflectDir = reflect(-lightDir,normal);
-	float spec = pow(max(dot(viewDir,reflectDir),0.0), shininess);
+	float spec = pow(max(dot(viewDir,-reflectDir),0.0), shininess);
 	
 	vec4 ambient = 0.1 * L.colour * matDiffuse;
 	vec4 diffuse = L.colour * diff * matDiffuse;
 	vec4 specular = L.colour * spec * matSpecular;
 
 	float distance = length(L.position - fragPos);
-	float attenuation = 1.0 / (L.attenuation.x * distance * distance + L.attenuation.y * distance + L.attenuation.z);
+	float attenuation = 1.0 / ((L.attenuation.x * distance * distance) + (L.attenuation.y * distance) + L.attenuation.z);
 
 	ambient *= attenuation;
 	diffuse *= attenuation;
@@ -78,9 +78,9 @@ vec4 CalcPointLight(pointLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
 	vec3 lightDir = normalize(L.position - fragPos);
 	float diff = max(dot(normal, lightDir),0.0);
 	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir),0.0), shininess);
+	float spec = pow(max(dot(viewDir, -reflectDir),0.0), shininess);
 	float distance = length(L.position - fragPos);
-	float attenuation = 1.0 / (L.attenuation.x * distance * distance + L.attenuation.y * distance + L.attenuation.z);
+	float attenuation = 1.0 / ((L.attenuation.x * distance * distance) + (L.attenuation.y * distance) + L.attenuation.z);
 
 	vec4 ambient = 0.1 * L.colour * matDiffuse;
 	vec4 diffuse = L.colour * diff * matDiffuse;
@@ -100,10 +100,10 @@ vec4 CalcSpotLight(spotLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+    float spec = pow(max(dot(viewDir, -reflectDir), 0.0), shininess);
     // attenuation
     float distance = length(L.position - fragPos);
-    float attenuation = 1.0 / (L.attenuation.x * distance * distance + L.attenuation.y * distance + L.attenuation.z);
+    float attenuation = 1.0 / ((L.attenuation.x * distance * distance) + (L.attenuation.y * distance) + L.attenuation.z);
     // spotlight intensity
     float theta = dot(lightDir, normalize(-L.direction)); 
     float epsilon = L.angle - L.outerAngle;
@@ -152,5 +152,6 @@ void main()
 		result += CalcSpotLight(SLights[i], norm, FragPos, viewDir);
 
 	FragColor = result;
-	FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+	//FragColor = shininess * vec4(1.0f,1.0f,1.0f,1.0f);
+	//FragColor = matDiffuse;
 }
