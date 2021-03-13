@@ -39,6 +39,9 @@ uniform pointLight PLights[MAX_LIGHTS];
 uniform int dirLightCount;
 uniform dirLight DLights[MAX_LIGHTS];
 
+uniform bool useDifTex;
+uniform bool useSpecTex;
+
 uniform vec4 DifCol;
 uniform vec4 SpecCol;
 
@@ -123,7 +126,7 @@ void main()
 	vec3 norm = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec4 testVec = vec4(-1.0,-1.0,-1.0,-1.0);
-	if (any(notEqual(DifCol,testVec)))
+	if (!useDifTex)
 	{
 		matDiffuse = DifCol;
 	}
@@ -132,13 +135,13 @@ void main()
 		matDiffuse = vec4(texture(DifTex, TexCoords));
 	}
 
-	if (any(notEqual(SpecCol,testVec)))
+	if (!useSpecTex)
 	{
-		matDiffuse = SpecCol;
+		matSpecular = SpecCol;
 	}
 	else
 	{
-		matDiffuse = vec4(texture(SpecTex, TexCoords));
+		matSpecular = vec4(texture(SpecTex, TexCoords));
 	}
 
 	vec4 result = vec4(0.0,0.0,0.0,0.0);

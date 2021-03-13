@@ -28,7 +28,7 @@ namespace QG
 	std::variant<Colour, unsigned int> Material::getDiff()
 	{
 		if (auto value = std::get_if<Texture>(&Diffuse))
-			return value->getID();
+			return value->getSlot();
 		else if (auto value = std::get_if<Colour>(&Diffuse))
 			return *value;
 		else
@@ -38,7 +38,7 @@ namespace QG
 	std::variant<Colour, unsigned int> Material::getSpec()
 	{
 		if (auto value = std::get_if<Texture>(&Specular))
-			return value->getID();
+			return value->getSlot();
 		else if (auto value = std::get_if<Colour>(&Specular))
 			return *value;
 		else

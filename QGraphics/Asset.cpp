@@ -30,6 +30,7 @@ namespace QG
 		window* win = (window*)(glfwGetWindowUserPointer(context));
 		shader->setVector<3>("viewPos", win->cam->getPosition());
 		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
+		shader->setMatrix<4, 4>("projection", win->cam->projMatrix());
 		shader->setMatrix<4, 4>("model", modelMatrix());
 
 		auto temp = material->getDiff();
@@ -39,11 +40,13 @@ namespace QG
 			shader->setInt("DifTex", *(int*)(std::get_if<unsigned int>(&temp)));
 			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
 			shader->setVector<4>("DifCol", noCol);
+			shader->setBool("useDifTex", true);
 		}
 		else
 		{
 			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
 			shader->setInt("DifTex", 31);
+			shader->setBool("useDifTex", false);
 		}
 
 		temp = material->getSpec();
@@ -53,11 +56,13 @@ namespace QG
 			shader->setInt("SpecTex", *(int*)(std::get_if<unsigned int>(&temp)));
 			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
 			shader->setVector<4>("SpecCol", noCol);
+			shader->setBool("useSpecTex", true);
 		}
 		else
 		{
 			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
 			shader->setInt("SpecTex", 31);
+			shader->setBool("useSpecTex", false);
 		}
 
 		shader->setFloat("shininess", material->getShininess());

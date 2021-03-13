@@ -100,6 +100,7 @@ namespace QG
 		}
 
 		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_TEXTURE_2D);
 		glDebugMessageCallback(MessageCallback, 0);
 
 	}

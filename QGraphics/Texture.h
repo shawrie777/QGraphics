@@ -13,8 +13,8 @@ namespace QG
 		int height;
 		int components;
 		unsigned char* data;
-		GLenum format = 1;
-		GLenum slot = 1;
+		GLenum format;
+		GLenum slot;
 		void initTexSlots();
 	public:
 		Texture(const char* filepath);
@@ -22,6 +22,7 @@ namespace QG
 		void Unbind();
 
 		const unsigned int getID() { return ID; };
+		const unsigned int getSlot() { return slot - 0x84C0; };
 	};
 
 }
