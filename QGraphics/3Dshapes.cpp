@@ -52,8 +52,8 @@ namespace QG
 		vertices.push_back(QG::Vertex(BBR, QM::vector<2>(0.75f, 1.0f / 3.0f), rightNorm)); //20
 
 		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(0.25f, 0.0f), bottomNorm));
-		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(0.0f, 1.0f / 3.0f), backNorm));
-		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(1.0f, 1.0f / 3.0f), leftNorm)); //23
+		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(1.0f, 1.0f / 3.0f), backNorm));
+		vertices.push_back(QG::Vertex(BBL, QM::vector<2>(0.0f, 1.0f / 3.0f), leftNorm)); //23
 		
 		indices.AddIndices({16,13,1,16,4,1,3,9,6,3,6,0,14,2,8,14,8,20,23,11,5,23,17,5,21,15,12,21,12,18,22,19,10,10,7,19});		
 	}
