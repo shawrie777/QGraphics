@@ -421,27 +421,42 @@ namespace QG
 
 	sphere::sphere()
 	{
-		QM::vector<2>zero(0.0f, 0.0f);
-
-		QM::vector<3>point(0.0f, 0.0f, 1.0f);
-		vertices.push_back(Vertex(point, zero, point));
-
-
-		for (float theta = 5.625f;theta<180.0f;theta+=5.625f)
-			for (float phi = 0.0f; phi < 360.0f; phi += 5.625f)
+		for (float theta = 0.0f; theta < 181.0f; theta += 5.625f)
+			for (float phi = 0.0f; phi < 361.0f; phi += 5.625f)
 			{
 				float xValue = (float)(sin(QM::rad(theta)) * cos(QM::rad(phi)));
 				float yValue = (float)(sin(QM::rad(theta)) * sin(QM::rad(phi)));
 				float zValue = (float)(cos(QM::rad(theta)));
 
 				QM::vector<3>P(xValue, yValue, zValue);
-				assert(abs(P.magnitude() - 1)<0.000001);
-				vertices.push_back(Vertex(P, zero, P));
+				assert(abs(P.magnitude() - 1) < 0.000001);
+
+				QM::vector<2>Tcoord;
+				float xIncrement = 0.015625f;
+				float yIncrement = 0.03125f;
+				float phiCheck = (phi / 5.625f) * xIncrement;
+				phiCheck = phiCheck > 1.0f ? (phiCheck - 1.0f) : phiCheck;
+				Tcoord.set(1, phiCheck);
+				Tcoord.set(2, (theta / 5.625f) * yIncrement);
+				if (theta == 0.0f || theta == 180.0f)
+					Tcoord += QM::vector<2>(0.0078125f, 0.0f);
+
+				if (Tcoord.get(1) <= 1.0f && Tcoord.get(2) <= 1.0f)
+					vertices.push_back(Vertex(P, Tcoord, P));
 			}
+	
+		for (int i = 0; i < 64; i++)
+			indices.AddIndices({ i, i + 64, i + 65 });
 
-		point.set(3, -1.0f);
-		vertices.push_back(Vertex(point, zero, point));
+		for (int i = 2079; i < 2143; i++)
+			indices.AddIndices({i, i - 64, i - 65});
 
+		for (int i = 64; i < 2015; i++)
+			if (i % 65 != 63)
+				indices.AddIndices({ i, i + 1, i + 65,i + 1,i + 65,i + 66 });
+
+
+		/*
 		for (int i = 1; i < 64; i++)
 			indices.AddIndices({ 0,i,i+1 });
 		indices.AddIndices({ 0,64,1 });
@@ -457,6 +472,7 @@ namespace QG
 			else			
 				indices.AddIndices({ i,i + 1,i + 64,i + 1,i + 64,i + 65 });
 		}
+		*/
 
 	}
 	
