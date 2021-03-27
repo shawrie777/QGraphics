@@ -576,29 +576,52 @@ namespace QG
 	torus::torus(float ratio): m_ratio(ratio)
 	{
 		QM::vector<2> zero(0.0f, 0.0f);
-
-		for (float phi = 0.0f; phi < 360.0f; phi += 5.625)
-			for (float theta = 0.0f; theta < 360.0f; theta += 5.625)
+		float increment = 1.0f / 64.0f;
+		bool secondPass = false;
+		for (float phi = 0.0f; phi < 360.0f; phi += 5.625f)
+		{
+			for (float theta = 0.0f; theta < 360.0f; theta += 5.625f)
 			{
 				float xValue = (float)((1 + cos(QM::rad(theta)) / ratio) * cos(QM::rad(phi)));
 				float yValue = (float)((1 + cos(QM::rad(theta)) / ratio) * sin(QM::rad(phi)));
 				float zValue = (float)(sin(QM::rad(theta)) / ratio);
 
-				QM::vector<3>P(xValue, yValue, zValue);				
-				vertices.push_back(Vertex(P, zero, P));
-			}
+				QM::vector<3>P(xValue, yValue, zValue);
 
-		for (int i = 0; i < 4032; i++)
-		{
-			if (i % 64 == 63)
-				indices.AddIndices({ i,i - 63,i + 64,i - 63 ,i + 1,i + 64 });
-			else
-				indices.AddIndices({ i,i + 1,i + 64,i + 1,i + 65,i + 64 });
+				QM::vector<2> TCoord;
+				float xCoord = (phi * increment) / 5.625f + 0.5f;
+				xCoord = xCoord > 1.0f ? xCoord - 1.0f : xCoord;
+				if (secondPass)
+					xCoord = 0.0f;
+				TCoord.set(1, xCoord);
+
+				float yCoord = 0.5f - ((theta * increment) / 5.625f);
+				yCoord = yCoord < 0.0f ? yCoord + 1.0f : yCoord;
+				TCoord.set(2, yCoord);
+				vertices.push_back(Vertex(P, TCoord, P));
+
+				if (theta == 180.0f)
+				{
+					TCoord.set(2, 1.0f);
+					vertices.push_back(Vertex(P, TCoord, P));
+				}
+			}
+			if (phi == 180.0f)			
+				secondPass = !secondPass;			
+			if (secondPass)
+				phi -= 5.625f;
 		}
 
-		for (int i = 4032; i < 4095; i++)
-			indices.AddIndices({ i,i + 1,i - 4032,i + 1,i - 4032,i - 4031 });
-		indices.AddIndices({ 4095,4032,63,4032,63,0 });
+		for (int i = 0; i < 4225; i++)
+		{
+			if (i % 65 != 32 && (i < 2080 || i > 2144))
+			{
+				int a = (i + 1) % 4225;
+				int b = (i + 65) % 4225;
+				int c = (i + 66) % 4225;
+				indices.AddIndices({ i,a,b,a,b,c });
+			}
+		}
 	}
-
+	
 }
