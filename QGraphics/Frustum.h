@@ -11,9 +11,8 @@ namespace QG
 		float m_ratio = 1.0f;
 	public:
 		frustum(float ratio);
-		void setFaceColour(int face, Colour col);
-		void setColour(Colour col);
 	};
+
 	template<int baseSides>
 	//ratio should be between 0 and 1
 	inline frustum<baseSides>::frustum(float ratio): m_ratio(ratio)
@@ -85,25 +84,4 @@ namespace QG
 			}
 		}
 	}
-
-	template<int baseSides>
-	inline void frustum<baseSides>::setFaceColour(int face, Colour col)
-	{
-		for (auto& x : vertices)
-		{
-			if (x.getNormal() == norms[face])
-				x.setColour(col);
-		}
-	}
-
-	template<int baseSides>
-	inline void frustum<baseSides>::setColour(Colour col)
-	{
-		for (auto& x : vertices)
-		{
-			x.setColour(col);
-		}
-	}
-
-
 }

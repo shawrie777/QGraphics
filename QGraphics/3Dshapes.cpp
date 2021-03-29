@@ -475,107 +475,9 @@ namespace QG
 		*/
 
 	}
-	
-	float torus::torusDist(QG::Vertex& A, QG::Vertex& B)
-	{
-		/*double ATheta = asin(m_ratio * A.getPosition().get(3));
-		float AMag = A.getPosition().magnitude();
-		float checkDist = sqrt(1 + (1 / (m_ratio * m_ratio)));
-
-		QM::rangeCheck(ATheta);
-
-		if(ATheta>QM::pi)
-
-		else if (ATheta<QM::pi)
-
-
-		QM::rangeCheck(ATheta);
-
-		double APhi = asin(A.getPosition().get(2) / (1.0 + cos(ATheta) / m_ratio));
-		QM::rangeCheck(APhi);
-
-		if (A.getPosition().get(1) < 0)
-			APhi = QM::pi - APhi;
-		QM::rangeCheck(APhi);
-		
-		double BTheta = asin(m_ratio * B.getPosition().get(3));
-		float BMag = B.getPosition().magnitude();
-
-		QM::rangeCheck(BTheta);
-
-		if (BMag > checkDist)
-		{
-			//theta should be more than 3pi/4 or less than pi/4		
-			if (BTheta > QM::pi / 4 && BTheta < 3 * QM::pi / 4)
-				BTheta = QM::pi - BTheta;
-		}
-		else if (BMag < checkDist)
-		{
-			if (BTheta < QM::pi / 4 || BTheta > 3 * QM::pi / 4)
-				BTheta = QM::pi - BTheta;
-		}
-
-		QM::rangeCheck(BTheta);
-
-		double BPhi = asin(B.getPosition().get(2) / (1.0 + cos(BTheta) / m_ratio));
-		QM::rangeCheck(BPhi);
-
-		if (B.getPosition().get(1) < 0)
-			BPhi = QM::pi - BPhi;
-		QM::rangeCheck(BPhi);*/
-
-		double APhi = atan2(A.getPosition().get(2), A.getPosition().get(1));
-		QM::rangeCheck(APhi);
-		double ATheta1 = acos(m_ratio * ((A.getPosition().get(2) / sin(APhi)) - 1));
-		double ATheta = asin(m_ratio * A.getPosition().get(3));
-
-		if (isnan(ATheta1))
-			ATheta1 = acos(m_ratio * ((A.getPosition().get(1) / cos(APhi)) - 1));
-
-		QM::rangeCheck(ATheta1);
-		QM::rangeCheck(ATheta);
-		
-		if (abs(ATheta1 - ATheta) > 0.01)
-			ATheta1 = 2 * QM::pi - ATheta1;
-		if (abs(ATheta1 - ATheta) > 0.01)
-			ATheta = QM::pi - ATheta;
-		
-		QM::rangeCheck(ATheta);
-
-		double BPhi = atan2(B.getPosition().get(2), B.getPosition().get(1));
-		QM::rangeCheck(BPhi);
-		double BTheta1 = acos(m_ratio * ((B.getPosition().get(2) / sin(BPhi)) - 1));
-		double BTheta = asin(m_ratio * B.getPosition().get(3));
-
-		if (isnan(BTheta1))
-			BTheta1 = acos(m_ratio * ((B.getPosition().get(1) / cos(BPhi)) - 1));
-
-		QM::rangeCheck(BTheta1);
-		QM::rangeCheck(BTheta);
-
-		if (abs(BTheta1 - BTheta) > 0.01)
-			BTheta1 = 2 * QM::pi - BTheta1;
-		if (abs(BTheta1 - BTheta) > 0.01)
-			BTheta = QM::pi - BTheta;
-		
-		QM::rangeCheck(BTheta);
-
-		double dTheta = abs(BTheta - ATheta);
-		if (dTheta > QM::pi) dTheta = 2 * QM::pi - dTheta;
-
-		double dPhi = abs(BPhi - APhi);
-		if (dPhi > QM::pi) dPhi = 2 * QM::pi - dPhi;
-
-		dTheta /= m_ratio;
-
-		double L = (dTheta * dTheta) + (dPhi * dPhi);
-
-		return (float)sqrt(L);
-	}
 
 	torus::torus(float ratio): m_ratio(ratio)
 	{
-		QM::vector<2> zero(0.0f, 0.0f);
 		float increment = 1.0f / 64.0f;
 		bool secondPass = false;
 		for (float phi = 0.0f; phi < 360.0f; phi += 5.625f)
@@ -588,6 +490,11 @@ namespace QG
 
 				QM::vector<3>P(xValue, yValue, zValue);
 
+				float normX = (float)(cos(QM::rad(theta)) * cos(QM::rad(phi)) / ratio);
+				float normY = (float)(cos(QM::rad(theta)) * sin(QM::rad(phi)) / ratio);
+
+				QM::vector<3>norm(normX, normY, zValue);
+
 				QM::vector<2> TCoord;
 				float xCoord = (phi * increment) / 5.625f + 0.5f;
 				xCoord = xCoord > 1.0f ? xCoord - 1.0f : xCoord;
@@ -598,12 +505,12 @@ namespace QG
 				float yCoord = 0.5f - ((theta * increment) / 5.625f);
 				yCoord = yCoord < 0.0f ? yCoord + 1.0f : yCoord;
 				TCoord.set(2, yCoord);
-				vertices.push_back(Vertex(P, TCoord, P));
+				vertices.push_back(Vertex(P, TCoord, norm));
 
 				if (theta == 180.0f)
 				{
 					TCoord.set(2, 1.0f);
-					vertices.push_back(Vertex(P, TCoord, P));
+					vertices.push_back(Vertex(P, TCoord, norm));
 				}
 			}
 			if (phi == 180.0f)			
@@ -614,7 +521,7 @@ namespace QG
 
 		for (int i = 0; i < 4225; i++)
 		{
-			if (i % 65 != 32 && (i < 2080 || i > 2144))
+			if (i % 65 != 32 && (i <= 2080 || i >= 2144))
 			{
 				int a = (i + 1) % 4225;
 				int b = (i + 65) % 4225;

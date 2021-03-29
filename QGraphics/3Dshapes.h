@@ -19,7 +19,6 @@ namespace QG
 	{
 	private:
 		float m_ratio;
-		float torusDist(QG::Vertex& A, QG::Vertex& B);
 	public:
 		torus(float ratio = 1.5f);
 	};
