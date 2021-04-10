@@ -184,18 +184,18 @@ namespace QG
 
 	void Asset::setRotation(double xAngle, double yAngle, double zAngle)
 	{
-		rotation = QM::rotation(xAngle, yAngle, zAngle);
+		rotation = QM::rotation(xAngle, yAngle, zAngle).normalise();
 	}
 
 	void Asset::setRotation(float angle, QM::vector<3> axis)
 	{
-		rotation = QM::rotation(angle, axis);
+		rotation = QM::rotation(angle, axis).normalise();
 	}
 
 	void Asset::setRotation(QM::Quaternion Q)
 	{//may need more checks
 		if (abs(Q.magnitude()-1) < 0.01)
-			rotation = Q;
+			rotation = Q.normalise();
 	}
 
 	QM::Quaternion Asset::getRotation()
@@ -205,20 +205,20 @@ namespace QG
 
 	void Asset::changeRotation(double xAngle, double yAngle, double zAngle)
 	{
-		auto rot2 = QM::rotation(xAngle, yAngle, zAngle);
-		rotation = rot2 * rotation;
+		auto rot2 = QM::rotation(xAngle, yAngle, zAngle).normalise();
+		rotation = (rot2 * rotation).normalise();
 	}
 
 	void Asset::changeRotation(float angle, QM::vector<3> axis)
 	{
 		auto rot2 = QM::rotation(angle, axis);
-		rotation = rot2 * rotation;
+		rotation = (rot2 * rotation).normalise();
 	}
 
 	void Asset::changeRotation(QM::Quaternion Q)
 	{
 		if (abs(Q.magnitude() - 1) < 0.01)
-			rotation = Q * rotation;
+			rotation = (Q * rotation).normalise();
 	}
 
 	void Asset::setPosition(float x, float y, float z)
