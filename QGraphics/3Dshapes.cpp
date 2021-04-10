@@ -80,7 +80,7 @@ namespace QG
 			norm1 = -1 * norm1;
 		norms.push_back(norm1);
 		QM::vector<3>norm2 = side1.cross(side2);
-		if (norm0.get(2) < 0)
+		if (norm2.get(2) < 0)
 			norm2 = -1 * norm2;
 		norms.push_back(norm2);
 		QM::vector<3>norm3 = side3.cross(side4);
