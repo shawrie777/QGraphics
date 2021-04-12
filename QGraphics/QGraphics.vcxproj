@@ -120,6 +120,7 @@
     <ClInclude Include="2Dshape.h" />
     <ClInclude Include="3Dshapes.h" />
     <ClInclude Include="Asset.h" />
+    <ClInclude Include="AssetGroup.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Colour.h" />
     <ClInclude Include="Core.h" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="3Dshapes.cpp" />
     <ClCompile Include="Asset.cpp" />
+    <ClCompile Include="AssetGroup.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="Core.cpp" />

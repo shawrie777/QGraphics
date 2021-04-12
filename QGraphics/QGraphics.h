@@ -10,3 +10,4 @@
 #include "3Dshapes.h"
 #include "Prism.h"
 #include "Light.h"
+#include "AssetGroup.h"
