@@ -103,6 +103,9 @@ namespace QG
 		glEnable(GL_TEXTURE_2D);
 		glDebugMessageCallback(MessageCallback, 0);
 
+
+		cam = std::make_unique<Camera>(QM::vector<3>(),QM::vector<3>(0.0f,0.0f,-1.0f));
+
 	}
 
 	window::~window()
@@ -138,7 +141,7 @@ namespace QG
 
 	void window::addCamera(Camera c)
 	{
-		cam = std::make_unique<Camera>(c);
+		cam.reset(&c);
 	}
 
 	void mouse_callback(GLFWwindow* win, double xPos, double yPos)

@@ -13,16 +13,43 @@ namespace QG
 		QM::vector<3> position{ 0.0f,0.0f,0.0f };
 		bool built = false;
 		GLenum drawType = GL_TRIANGLES;
+
+		bool defaultShader;
+		bool defaultMaterial = true;
+
+		Shader* shader;
+		Material* material;
 	public:
 		VertexBuffer vertices;
 		IndexBuffer indices;
-		Shader* shader;
-		Material* material;
 
-		Asset(): shader(nullptr), material(nullptr) {};
-		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S), material(nullptr) {};
-		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader(), material(nullptr) {};
-		~Asset() {};
+		Asset(): shader(new Shader), material(new Material), defaultShader(true){};
+		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S), material(new Material), defaultShader(false) {};
+		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader(new Shader), material(new Material), defaultShader(false) {};
+		~Asset() {
+			if (defaultShader)
+				delete shader;
+			if (defaultMaterial)
+				delete material;
+		};
+
+		Shader* getShader() const { return shader; };
+
+		void setShader(Shader* S) { 
+			defaultShader = false;
+			delete shader;
+			shader = S; 
+		};
+		void setShader(Shader S) { setShader(&S); };
+
+		Material* getMaterial() const { return material; };
+
+		void setMaterial(Material* M) {
+			defaultMaterial = false;
+			delete material;
+			material = M;
+		};
+		void setMaterial(Material M) { setMaterial(&M); };
 
 		virtual void build();
 

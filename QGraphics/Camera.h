@@ -36,7 +36,7 @@ namespace QG
 
 		std::map<CameraMovement, keyCode> keys;
 	public:
-		float movementSpeed = 2.5f;
+		float movementSpeed = 5.0f;
 		float RotateSpeed = 0.05f;
 		bool constrainPitch = true;
 
