@@ -43,6 +43,9 @@ namespace QG
 		void enableCamPan();
 		void disableCamRotate();
 		void disableCamPan();
+
+
+		void render();
 	};
 
 

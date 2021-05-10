@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Asset.h"
 
 namespace QG
 {
@@ -37,6 +38,13 @@ namespace QG
 	{
 		camPan = false;
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	void window::render()
+	{
+		for (auto* x : Assets::assets)
+			x->draw();
+
 	}
 
 	void window::mouseMove(double xpos, double ypos)
@@ -120,6 +128,8 @@ namespace QG
 
 	void window::endFrame()
 	{
+		render();
+
 		processInput();
 		glfwSwapBuffers(m_window);
 		glfwPollEvents();

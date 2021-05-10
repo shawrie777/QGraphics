@@ -45,7 +45,7 @@ namespace QG
 
 		virtual void build();
 
-		void draw();
+		virtual void draw();
 		
 		virtual QM::matrix<4, 4, float> modelMatrix();
 		
