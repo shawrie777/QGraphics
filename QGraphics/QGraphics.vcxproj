@@ -139,6 +139,7 @@
     <ClInclude Include="Projections.h" />
     <ClInclude Include="QGraphics.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex Buffer.h" />
@@ -158,11 +159,16 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Projections.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vertex Buffer.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="skybox_frag_shader.txt" />
+    <Text Include="skybox_vertex_shader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

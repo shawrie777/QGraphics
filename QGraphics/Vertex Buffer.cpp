@@ -53,7 +53,7 @@ namespace QG
 				floatData.push_back(y);
 
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * floatData.size(), floatData.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * floatData.size(), floatData.data(), GL_STATIC_DRAW);
 
 
 		glEnableVertexAttribArray(attrib);

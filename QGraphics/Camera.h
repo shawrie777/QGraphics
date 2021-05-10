@@ -70,6 +70,9 @@ namespace QG
 
 		void mouseMove(float xoffset, float yoffset);
 		void mouseRotate(float xoffset, float yoffset);
+
+		camType getProjType() const { return proj.getType(); };
+
 	};
 
 }

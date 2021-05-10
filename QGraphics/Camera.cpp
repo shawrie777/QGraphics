@@ -34,15 +34,18 @@ namespace QG
 	void Camera::addProjection(Projection& P)
 	{
 			proj = Projection(P);
+			updateCameraVectors();
 	}
 	void Camera::addProjection(double fovX, double aspect, double near, double far)
 	{
 		proj = Projection(fovX, aspect, near, far);
+		updateCameraVectors();
 	}
 
 	void Camera::addProjection(int left, int right, int bottom, int top, int near, int far)
 	{
 			proj = Projection(left, right, bottom, top, near, far);
+			updateCameraVectors();
 	}
 
     QM::matrix<4, 4> Camera::viewMatrix()

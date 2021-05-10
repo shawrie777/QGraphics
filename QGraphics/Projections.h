@@ -32,6 +32,6 @@ namespace QG
 			updateMatrix();
 		};
 
-
+		camType getType() const { return Type; };
 	};
 }

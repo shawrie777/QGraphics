@@ -48,4 +48,15 @@ namespace QG
 	{
 		return shininess;
 	}
+
+	void Material::Bind()
+	{
+		std::get_if<Texture>(&Diffuse)->Bind();
+		std::get_if<Texture>(&Specular)->Bind();
+	}
+	void Material::Unbind()
+	{
+		std::get_if<Texture>(&Diffuse)->Unbind();
+		std::get_if<Texture>(&Specular)->Unbind();
+	}
 }

@@ -3,13 +3,34 @@
 #include <string>
 #include "Window.h"
 
+namespace Assets
+{
+	std::vector<QG::Asset*> assets;
+}
+
 namespace QG
 {
+	Asset::Asset() : shader(new Shader), material(new Material), defaultShader(true)
+	{
+		Assets::assets.push_back(this);
+	};
+
+	Asset::Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S) : vertices(VB), indices(IB), shader(&S), material(new Material), defaultShader(false) { Assets::assets.push_back(this); };
+
+	Asset::Asset(VertexBuffer& VB, IndexBuffer& IB) : vertices(VB), indices(IB), shader(new Shader), material(new Material), defaultShader(false) { Assets::assets.push_back(this); };
+
 	Asset::~Asset() {
 		if (defaultShader)
 			delete shader;
 		if (defaultMaterial)
 			delete material;
+
+		for (auto i = Assets::assets.begin(); i != Assets::assets.end(); i++)
+			if (*i == this)
+			{
+				Assets::assets.erase(i);
+				break;
+			}
 	};
 
 
@@ -25,6 +46,9 @@ namespace QG
 
 	void Asset::draw()
 	{
+		if (!m_shown || grouped)
+			return;
+
 		if (!built)
 			build();
 
@@ -39,6 +63,8 @@ namespace QG
 		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
 		shader->setMatrix<4, 4>("projection", win->cam->projMatrix());
 		shader->setMatrix<4, 4>("model", modelMatrix());
+
+		material->Bind();
 
 		auto temp = material->getDiff();
 
@@ -107,6 +133,7 @@ namespace QG
 		}
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
+		material->Unbind();
 	}
 
 	QM::matrix<4, 4, float> Asset::modelMatrix()
@@ -253,4 +280,24 @@ namespace QG
 		position += R;
 	}
 
+	Shader* Asset::getShader() const { return shader; };
+
+	void Asset::setShader(Shader* S) {
+		defaultShader = false;
+		delete shader;
+		shader = S;
+	};
+
+	Material* Asset::getMaterial() const { return material; };
+
+	void Asset::setMaterial(Material* M) {
+		defaultMaterial = false;
+		delete material;
+		material = M;
+	};
+	void Asset::setMaterial(Material M) { setMaterial(&M); };
+
+	bool Asset::isShown() { return m_shown; };
+	void Asset::show() { m_shown = true; };
+	void Asset::hide() { m_shown = false; };
 }

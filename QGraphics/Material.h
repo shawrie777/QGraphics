@@ -22,5 +22,8 @@ namespace QG
 		std::variant<Colour, unsigned int> getDiff();
 		std::variant<Colour, unsigned int> getSpec();
 		float getShininess();
+
+		void Bind();
+		void Unbind();
 	};
 }

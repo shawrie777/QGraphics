@@ -7,15 +7,20 @@ namespace QG
 {
 	class Asset
 	{
+		friend class AssetGroup;
 	protected:
 		QM::vector<3> scale{ 1.0f,1.0f,1.0f };
 		QM::Quaternion rotation{ 1,0,0,0 };
 		QM::vector<3> position{ 0.0f,0.0f,0.0f };
 		bool built = false;
+		bool m_shown = true;
+		bool changed = true;
 		GLenum drawType = GL_TRIANGLES;
 
 		bool defaultShader;
 		bool defaultMaterial = true;
+
+		bool grouped = false;
 
 		Shader* shader;
 		Material* material;
@@ -23,28 +28,20 @@ namespace QG
 		VertexBuffer vertices;
 		IndexBuffer indices;
 
-		Asset(): shader(new Shader), material(new Material), defaultShader(true){};
-		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S), material(new Material), defaultShader(false) {};
-		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader(new Shader), material(new Material), defaultShader(false) {};
+		Asset();
+		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S);
+		Asset(VertexBuffer& VB, IndexBuffer& IB);
 		~Asset();
 
-		Shader* getShader() const { return shader; };
+		Shader* getShader() const;
 
-		void setShader(Shader* S) { 
-			defaultShader = false;
-			delete shader;
-			shader = S; 
-		};
-		void setShader(Shader S) { setShader(&S); };
+		void setShader(Shader* S);
 
-		Material* getMaterial() const { return material; };
+		Material* getMaterial() const;
 
-		void setMaterial(Material* M) {
-			defaultMaterial = false;
-			delete material;
-			material = M;
-		};
-		void setMaterial(Material M) { setMaterial(&M); };
+		void setMaterial(Material* M);
+
+		void setMaterial(Material M);
 
 		virtual void build();
 
@@ -76,6 +73,15 @@ namespace QG
 
 		virtual void move(float x, float y, float z);
 		virtual void move(QM::vector<3> R);
+
+		bool isShown();
+		void show();
+		void hide();
 	};
 
+}
+
+namespace Assets
+{
+	extern std::vector<QG::Asset*> assets;
 }
