@@ -5,6 +5,13 @@
 
 namespace QG
 {
+	Asset::~Asset() {
+		if (defaultShader)
+			delete shader;
+		if (defaultMaterial)
+			delete material;
+	};
+
 
 	void QG::Asset::build()
 	{

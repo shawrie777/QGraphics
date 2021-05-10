@@ -26,12 +26,7 @@ namespace QG
 		Asset(): shader(new Shader), material(new Material), defaultShader(true){};
 		Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S): vertices(VB), indices(IB), shader(&S), material(new Material), defaultShader(false) {};
 		Asset(VertexBuffer& VB, IndexBuffer& IB): vertices(VB), indices(IB), shader(new Shader), material(new Material), defaultShader(false) {};
-		~Asset() {
-			if (defaultShader)
-				delete shader;
-			if (defaultMaterial)
-				delete material;
-		};
+		~Asset();
 
 		Shader* getShader() const { return shader; };
 
