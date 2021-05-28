@@ -51,12 +51,16 @@ namespace QG
 
 	void Material::Bind()
 	{
-		std::get_if<Texture>(&Diffuse)->Bind();
-		std::get_if<Texture>(&Specular)->Bind();
+		if (std::holds_alternative<Texture>(Diffuse))
+			std::get<Texture>(Diffuse).Bind();
+		if (std::holds_alternative<Texture>(Specular))
+			std::get<Texture>(Specular).Bind();
 	}
 	void Material::Unbind()
 	{
-		std::get_if<Texture>(&Diffuse)->Unbind();
-		std::get_if<Texture>(&Specular)->Unbind();
+		if (std::holds_alternative<Texture>(Diffuse))
+			std::get<Texture>(Diffuse).Unbind();
+		if (std::holds_alternative<Texture>(Specular))
+			std::get<Texture>(Specular).Unbind();
 	}
 }

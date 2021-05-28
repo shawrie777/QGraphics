@@ -78,10 +78,11 @@ namespace QG
 		return view;
     }
 
-	const QM::matrix<4, 4> Camera::projMatrix() const
+	Projection Camera::projMatrix()
 	{
 		return proj;
 	}
+
 	QM::vector<3> Camera::getPosition()
 	{
 		return m_position;

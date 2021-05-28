@@ -17,6 +17,7 @@ struct pointLight {
 	vec3 position;
 	vec4 colour;
 	vec3 attenuation;
+	samplerCube depthMap;
 };
 
 struct dirLight {
@@ -55,6 +56,8 @@ vec4 matSpecular;
 
 uniform vec3 viewPos;
 
+uniform float far_plane;
+
 vec4 CalcDirLight(dirLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
 	vec3 lightDir = normalize(-L.direction);
@@ -85,7 +88,7 @@ vec4 CalcPointLight(pointLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
 	float distance = length(L.position - fragPos);
 	float attenuation = 1.0 / ((L.attenuation.x * distance * distance) + (L.attenuation.y * distance) + L.attenuation.z);
 
-	vec4 ambient = 0.1 * L.colour * matDiffuse;
+	vec4 ambient = 0.15 * L.colour * matDiffuse;
 	vec4 diffuse = L.colour * diff * matDiffuse;
 	vec4 specular = L.colour * spec * matSpecular;
 
@@ -93,7 +96,21 @@ vec4 CalcPointLight(pointLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
 	diffuse *= attenuation;
 	specular *= attenuation;
 
-	return (ambient + diffuse + specular);
+	vec3 fragToLight = fragPos - L.position;
+	float currentDepth = length(fragToLight);
+
+	fragToLight = normalize(fragToLight);
+
+	float closestDepth = texture(L.depthMap, fragToLight).r;
+	closestDepth *= far_plane;
+
+	float bias = 0.05;
+	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+//	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+//	float shadow = 0;
+	return (ambient + (1.0 - shadow) * (diffuse + specular));
+
 }
 
 vec4 CalcSpotLight(spotLight L, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -137,7 +154,7 @@ void main()
 
 	if (!useSpecTex)
 	{
-		matSpecular = SpecCol;
+		matSpecular = SpecCol;	
 	}
 	else
 	{

@@ -10,23 +10,30 @@ namespace QG
 	protected:
 		Colour m_col;
 		QM::vector<3> m_position;
-		Asset* m_asset;
+		Asset* m_asset = nullptr;
 		QM::vector<3> m_attenuation;
+		std::shared_ptr<Shader> shader;
 
+		float shadowWidth = 0;
+		float shadowHeight = 0;
+
+		virtual std::shared_ptr<Shader> getShader();
+
+		virtual void fillShadowMap();
 
 	public:
 		Light();
 		~Light();
 
-		virtual Colour getColour() const;
-		virtual void setColour(Colour col);
-		virtual QM::vector<3> getPosition() const;
+		Colour getColour() const;
+		void setColour(Colour col);
+		QM::vector<3> getPosition() const;
 		virtual void setPosition(QM::vector<3> pos);
-		virtual Asset* getAsset();
-		virtual void setAsset(Asset* A);
-		virtual void removeAsset();
-		virtual QM::vector<3> getAttenuation() const;
-		virtual void setAttenuation(float quadratic, float linear, float constant);
+		Asset* getAsset();
+		void setAsset(Asset* A);
+		void removeAsset();
+		QM::vector<3> getAttenuation() const;
+		void setAttenuation(float quadratic, float linear, float constant);
 	};
 
 	class spotLight : public Light
@@ -49,10 +56,19 @@ namespace QG
 
 	class pointLight : public Light
 	{
+	private:
+		shadowMap SM;
+		std::vector <QM::matrix<4, 4>> shadowTransforms;
+		void createShadowTransform();
+
 	public:
 		pointLight();
 		pointLight(QM::vector<3> position);
 		~pointLight();
+
+		shadowMap* getShadowMap();
+		void setPosition(QM::vector<3> pos) override;
+		void fillShadowMap() override;
 	};
 
 	class directionalLight : public Light
@@ -77,8 +93,6 @@ namespace QG
 		//must use 2D shape
 		areaLight(Asset& shape);
 		~areaLight();
-		QM::vector<3> getPosition() const;
-		void setPosition(QM::vector<3> pos);
 	};
 
 

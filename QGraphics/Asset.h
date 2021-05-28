@@ -74,9 +74,11 @@ namespace QG
 		virtual void move(float x, float y, float z);
 		virtual void move(QM::vector<3> R);
 
-		bool isShown();
+		bool isShown() const;
 		void show();
 		void hide();
+		bool isGrouped() const;
+		GLenum getDrawType() const;
 	};
 
 }

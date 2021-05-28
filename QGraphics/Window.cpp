@@ -42,6 +42,9 @@ namespace QG
 
 	void window::render()
 	{
+		glViewport(0, 0, m_width, m_height);
+		clear();
+
 		for (auto* x : Assets::assets)
 			x->draw();
 
@@ -78,6 +81,10 @@ namespace QG
 
 	window::window(int width, int height, const char* title) : mouseX(width / 2.0f), mouseY(height / 2.0f)
 	{
+		m_width = width;
+		m_height = height;
+		m_title = title;
+
 		if (!initialised)
 			initialised = glfwInit();
 
@@ -97,6 +104,7 @@ namespace QG
 		glfwMakeContextCurrent(m_window);
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
 		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
 		glfwSetCursorPosCallback(m_window, mouse_callback);
@@ -109,6 +117,7 @@ namespace QG
 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_TEXTURE_3D);
 		glDebugMessageCallback(MessageCallback, 0);
 
 

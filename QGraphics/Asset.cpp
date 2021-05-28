@@ -63,6 +63,7 @@ namespace QG
 		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
 		shader->setMatrix<4, 4>("projection", win->cam->projMatrix());
 		shader->setMatrix<4, 4>("model", modelMatrix());
+		shader->setFloat("far_plane", (float)(win->cam->projMatrix().getFar()));
 
 		material->Bind();
 
@@ -77,7 +78,7 @@ namespace QG
 		}
 		else
 		{
-			shader->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
+			shader->setVector<4>("DifCol", std::get<Colour>(temp));
 			shader->setInt("DifTex", 31);
 			shader->setBool("useDifTex", false);
 		}
@@ -93,7 +94,7 @@ namespace QG
 		}
 		else
 		{
-			shader->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
+			shader->setVector<4>("SpecCol", std::get<Colour>(temp));
 			shader->setInt("SpecTex", 31);
 			shader->setBool("useSpecTex", false);
 		}
@@ -120,6 +121,8 @@ namespace QG
 			shader->setVector<3>("PLights[" + j + "].position", (*i)->getPosition());
 			shader->setVector<4>("PLights[" + j + "].colour", (*i)->getColour());
 			shader->setVector<3>("PLights[" + j + "].attenuation", (*i)->getAttenuation());
+			(*i)->getShadowMap()->Bind();
+			shader->setInt("PLights[" + j + "].depthMap", (*i)->getShadowMap()->getSlot());
 		}
 
 		shader->setInt("dirLightCount", (int)lighting::directionalLights.size());
@@ -134,6 +137,12 @@ namespace QG
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
 		material->Unbind();
+
+		for (auto i = lighting::pointLights.begin(); i != lighting::pointLights.end(); i++)
+			(*i)->getShadowMap()->Unbind();
+
+		vertices.Unbind();
+		indices.Unbind();
 	}
 
 	QM::matrix<4, 4, float> Asset::modelMatrix()
@@ -297,7 +306,9 @@ namespace QG
 	};
 	void Asset::setMaterial(Material M) { setMaterial(&M); };
 
-	bool Asset::isShown() { return m_shown; };
+	bool Asset::isShown()const { return m_shown; };
 	void Asset::show() { m_shown = true; };
 	void Asset::hide() { m_shown = false; };
+	bool Asset::isGrouped() const { return grouped; };
+	GLenum Asset::getDrawType() const { return drawType; };
 }

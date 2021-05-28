@@ -167,6 +167,9 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="point_light_frag.txt" />
+    <Text Include="point_light_geo.txt" />
+    <Text Include="point_light_vertex.txt" />
     <Text Include="skybox_frag_shader.txt" />
     <Text Include="skybox_vertex_shader.txt" />
   </ItemGroup>

@@ -9,11 +9,17 @@ namespace QG
 	{
 	private:
 		unsigned int ID;
+		unsigned int vertex, fragment, geometry;
+		bool geo;
 	public:
 		//Creates default shader
 		Shader();
 
 		Shader(const char* vertexPath, const char* fragmentPath);
+
+		//geometry shader optional
+		Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath);
+
 		~Shader();
 
 		void use();

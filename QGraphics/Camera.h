@@ -46,7 +46,7 @@ namespace QG
 		void addProjection(int left, int right, int bottom, int top, int near, int far);
 
 		QM::matrix<4, 4> viewMatrix();
-		const QM::matrix<4, 4> projMatrix() const;
+		Projection projMatrix();
 
 		QM::vector<3> getPosition();
 

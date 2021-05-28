@@ -67,8 +67,9 @@ namespace QG
 		slot = GL_TEXTURE0 + pos;
 		*empty = true;
 
-		glActiveTexture(slot);
+
 		glBindTexture(GL_TEXTURE_2D, ID);
+		glActiveTexture(slot);
 		bound = true;
 	}
 
@@ -80,6 +81,17 @@ namespace QG
 		texSlots[pos] = false;
 		glBindTexture(GL_TEXTURE_2D, 0);
 		bound = false;
+	}
+
+	CubeMap::CubeMap()
+	{
+		width = 0;
+		height = 0;
+		ID = 0;
+		components = 0;
+		slot = 0;
+		format = 0;
+		data = NULL;
 	}
 
 	CubeMap::CubeMap(std::vector<std::string> faces)
@@ -132,8 +144,8 @@ namespace QG
 		slot = GL_TEXTURE0 + pos;
 		*empty = true;
 
-		glActiveTexture(slot);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+		glActiveTexture(slot);
 		bound = true;
 	}
 
@@ -145,5 +157,69 @@ namespace QG
 		texSlots[pos] = false;
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		bound = false;
+	}
+
+
+	shadowMap::shadowMap()
+	{
+		initTexSlots();
+
+		glGenTextures(1, &ID);
+		glGenFramebuffers(1, &FBO);
+		width = 1024;
+		height = 1024;
+
+		Bind();
+		BindFBO();
+
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		}
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, ID, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+
+		Unbind();
+		UnbindFBO();
+	}
+
+	void shadowMap::Bind()
+	{
+		if (bound)
+			return;
+		CubeMap::Bind();
+		
+		bound = true;
+	}
+
+	void shadowMap::Unbind()
+	{
+		if (!bound)
+			return;
+		CubeMap::Unbind();		
+		bound = false;
+	}
+
+	void shadowMap::BindFBO()
+	{
+		if (FBObound)
+			return;
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		FBObound = true;
+	}
+	void shadowMap::UnbindFBO()
+	{
+		if (!FBObound)
+			return;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		FBObound = false;
 	}
 }

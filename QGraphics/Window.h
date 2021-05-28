@@ -22,6 +22,10 @@ namespace QG
 		float mouseY;
 		bool firstMouse = true;
 
+		float m_height;
+		float m_width;
+		std::string m_title;
+
 		void mouseMove(double xpos, double ypos);
 		
 	public:
