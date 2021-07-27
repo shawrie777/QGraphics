@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Asset.h"
+#include "Light.h"
 
 namespace QG
 {
@@ -12,6 +13,11 @@ namespace QG
 			{
 				cam->move(x.second, m_deltaTime);				
 			}
+	}
+
+	void window::setMouseMoveFunc(void(*func)(double, double))
+	{
+		mouseMoveFunc = func;
 	}
 
 	void window::enableCamRotate()
@@ -73,13 +79,14 @@ namespace QG
 		}
 		else
 		{
-
+			if (mouseMoveFunc != nullptr)
+				mouseMoveFunc(xpos, ypos);
 		}
 		mouseX = (float)xpos;
 		mouseY = (float)ypos;
 	}
 
-	window::window(int width, int height, const char* title) : mouseX(width / 2.0f), mouseY(height / 2.0f)
+	window::window(int width, int height, const char* title) : mouseX((float)width / 2.0f), mouseY((float)height / 2.0f)
 	{
 		m_width = width;
 		m_height = height;
@@ -105,7 +112,11 @@ namespace QG
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE);
+		//glDisable(GL_CULL_FACE);
 		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
+
+		glfwSetKeyCallback(m_window, keyCallback);
+		glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
 
 		glfwSetCursorPosCallback(m_window, mouse_callback);
 
@@ -137,15 +148,20 @@ namespace QG
 
 	void window::endFrame()
 	{
+		float currentTime = (float)glfwGetTime();
+		m_deltaTime = currentTime - m_lastFrameTime;
+		m_lastFrameTime = currentTime;
+
+		for (auto* x : lighting::pointLights)
+			x->fillShadowMap();
+		for (auto* x : lighting::spotLights)
+			x->fillShadowMap();
+
 		render();
 
 		processInput();
 		glfwSwapBuffers(m_window);
 		glfwPollEvents();
-
-		float currentTime = (float)glfwGetTime();
-		m_deltaTime = currentTime - m_lastFrameTime;
-		m_lastFrameTime = currentTime;
 	}
 
 	void window::setBackColour(Colour colour)

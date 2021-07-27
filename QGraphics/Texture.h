@@ -25,6 +25,8 @@ namespace QG
 		void Bind();
 		void Unbind();
 
+		void setActive();
+
 		const unsigned int getID() { return ID; };
 		const unsigned int getSlot() { return slot - 0x84C0; };
 	};
@@ -48,11 +50,12 @@ namespace QG
 		CubeMap(std::vector<std::string> faces);
 		CubeMap(std::string right, std::string left, std::string top, std::string bottom, std::string front, std::string back);
 
+		void setActive();
+
 		virtual void Bind();
 		virtual void Unbind();
 		const unsigned int getID() { return ID; };
 		const unsigned int getSlot() { return slot - 0x84C0; };
-
 	};
 
 	class shadowMap : public CubeMap

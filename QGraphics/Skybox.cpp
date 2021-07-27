@@ -7,7 +7,7 @@ namespace QG
 	{
 		delete material;
 		defaultMaterial = false;
-		shader = new Shader("f:/c++/qgraphics/QGraphics/skybox_vertex_shader.txt", "f:/c++/qgraphics/QGraphics/skybox_frag_shader.txt");
+		shader = new Shader("f:/c++/qgraphics/QGraphics/skybox_vertex_shader.vs", "f:/c++/qgraphics/QGraphics/skybox_frag_shader.fs");
 	}
 
 	Skybox::Skybox(std::string right, std::string left, std::string top, std::string bottom, std::string front, std::string back) :
@@ -15,7 +15,7 @@ namespace QG
 	{
 		delete material;
 		defaultMaterial = false;
-		shader = new Shader("f:/c++/qgraphics/QGraphics/skybox_vertex_shader.txt", "f:/c++/qgraphics/QGraphics/skybox_frag_shader.txt");
+		shader = new Shader("f:/c++/qgraphics/QGraphics/skybox_vertex_shader.vs", "f:/c++/qgraphics/QGraphics/skybox_frag_shader.fs");
 	}
 
 	void Skybox::draw()

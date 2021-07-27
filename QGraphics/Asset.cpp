@@ -2,6 +2,7 @@
 #include "Light.h"
 #include <string>
 #include "Window.h"
+#include <algorithm>
 
 namespace Assets
 {
@@ -63,38 +64,35 @@ namespace QG
 		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
 		shader->setMatrix<4, 4>("projection", win->cam->projMatrix());
 		shader->setMatrix<4, 4>("model", modelMatrix());
-		shader->setFloat("far_plane", (float)(win->cam->projMatrix().getFar()));
+		//shader->setFloat("far_plane", (float)(win->cam->projMatrix().getFar()));
+		shader->setFloat("far_plane", 25.0f);
 
-		material->Bind();
-
-		auto temp = material->getDiff();
+		material->Bind();		//POTENTIAL PROBLEM
 
 		if (material->usingDifTex())
-		{			
-			shader->setInt("DifTex", *(int*)(std::get_if<unsigned int>(&temp)));
+		{					
+			shader->setInt("DifTex", std::get<Texture>(material->getDiff()).getSlot());
 			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
 			shader->setVector<4>("DifCol", noCol);
 			shader->setBool("useDifTex", true);
 		}
 		else
 		{
-			shader->setVector<4>("DifCol", std::get<Colour>(temp));
+			shader->setVector<4>("DifCol", std::get<Colour>(material->getDiff()));
 			shader->setInt("DifTex", 31);
 			shader->setBool("useDifTex", false);
 		}
 
-		temp = material->getSpec();
-
 		if (material->usingSpecTex())
 		{
-			shader->setInt("SpecTex", *(int*)(std::get_if<unsigned int>(&temp)));
+			shader->setInt("SpecTex", std::get<Texture>(material->getSpec()).getSlot());
 			QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
 			shader->setVector<4>("SpecCol", noCol);
 			shader->setBool("useSpecTex", true);
 		}
 		else
 		{
-			shader->setVector<4>("SpecCol", std::get<Colour>(temp));
+			shader->setVector<4>("SpecCol", std::get<Colour>(material->getSpec()));
 			shader->setInt("SpecTex", 31);
 			shader->setBool("useSpecTex", false);
 		}
@@ -112,6 +110,8 @@ namespace QG
 			shader->setFloat("SLights[" + j + "].outerAngle", (*i)->getOuterAngle());
 			shader->setVector<4>("SLights[" + j + "].colour", (*i)->getColour());
 			shader->setVector<3>("SLights[" + j + "].attenuation", (*i)->getAttenuation());
+			(*i)->getShadowMap()->Bind();
+			shader->setInt("SLights[" + j + "].depthMap", (*i)->getShadowMap()->getSlot());
 		}
 		
 		shader->setInt("pointLightCount", (int)lighting::pointLights.size());
@@ -125,15 +125,15 @@ namespace QG
 			shader->setInt("PLights[" + j + "].depthMap", (*i)->getShadowMap()->getSlot());
 		}
 
-		shader->setInt("dirLightCount", (int)lighting::directionalLights.size());
-		for (auto i = lighting::directionalLights.begin(); i != lighting::directionalLights.end(); i++)
-		{
-			auto j = std::to_string(i - lighting::directionalLights.begin());
-			shader->setVector<3>("DLights[" + j + "].position", (*i)->getPosition());
-			shader->setVector<4>("DLights[" + j + "].colour", (*i)->getColour());
-			shader->setVector<3>("DLights[" + j + "].direction", (*i)->getDirection());
-			shader->setVector<3>("DLights[" + j + "].attenuation", (*i)->getAttenuation());
-		}
+		//shader->setInt("dirLightCount", (int)lighting::directionalLights.size());
+		//for (auto i = lighting::directionalLights.begin(); i != lighting::directionalLights.end(); i++)
+		//{
+		//	auto j = std::to_string(i - lighting::directionalLights.begin());
+		//	shader->setVector<3>("DLights[" + j + "].position", (*i)->getPosition());
+		//	shader->setVector<4>("DLights[" + j + "].colour", (*i)->getColour());
+		//	shader->setVector<3>("DLights[" + j + "].direction", (*i)->getDirection());
+		//	shader->setVector<3>("DLights[" + j + "].attenuation", (*i)->getAttenuation());
+		//}
 		
 		glDrawElements(drawType, indices.count(), GL_UNSIGNED_INT, nullptr);
 		material->Unbind();
@@ -295,20 +295,173 @@ namespace QG
 		defaultShader = false;
 		delete shader;
 		shader = S;
-	};
+	}
 
 	Material* Asset::getMaterial() const { return material; };
 
 	void Asset::setMaterial(Material* M) {
 		defaultMaterial = false;
-		delete material;
 		material = M;
-	};
-	void Asset::setMaterial(Material M) { setMaterial(&M); };
+	}
 
 	bool Asset::isShown()const { return m_shown; };
 	void Asset::show() { m_shown = true; };
 	void Asset::hide() { m_shown = false; };
 	bool Asset::isGrouped() const { return grouped; };
-	GLenum Asset::getDrawType() const { return drawType; };
+	GLenum Asset::getDrawType() const { return drawType; }
+	
+	void Asset::insideOut()
+	{
+		for (auto& x : vertices)
+			x.setNormal(-1 * x.getNormal());
+	}
+
+	float Asset::interceptTime(QM::vector<3> rayOrigin, QM::vector<3> direction)
+	{
+		QM::vector<4> lowBound4;
+		lowBound4.set(1, Lbound.get(1));
+		lowBound4.set(2, Lbound.get(2));
+		lowBound4.set(3, Lbound.get(3));
+		lowBound4.set(4, 1);
+		lowBound4 = modelMatrix() * lowBound4;
+		QM::vector<3> lowBound3;
+		lowBound3.set(1, lowBound4.get(1));
+		lowBound3.set(2, lowBound4.get(2));
+		lowBound3.set(3, lowBound4.get(3));
+
+		QM::vector<4> highBound4;
+		highBound4.set(1, Ubound.get(1));
+		highBound4.set(2, Ubound.get(2));
+		highBound4.set(3, Ubound.get(3));
+		highBound4.set(4, 1);
+		highBound4 = modelMatrix() * highBound4;
+		QM::vector<3> highBound3;
+		highBound3.set(1, highBound4.get(1));
+		highBound3.set(2, highBound4.get(2));
+		highBound3.set(3, highBound4.get(3));
+
+		bool xIntercept = true;
+		bool yIntercept = true;
+		bool zIntercept = true;
+
+		QM::vector<3> norm;
+		norm.set(1, modelMatrix().get(1, 1));
+		norm.set(2, modelMatrix().get(2, 1));
+		norm.set(3, modelMatrix().get(3, 1));
+
+		float denom = norm * direction;
+		float minX = 0;
+		float maxX = 0;
+		if (abs(denom) < 0.01)
+		{
+			minX = INFINITY;
+			maxX = INFINITY;
+			xIntercept = false;
+			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
+			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
+			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
+			if (Pdist < Udist || Pdist < Ldist)
+				return INFINITY;
+		}
+		else
+		{
+			minX = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
+			maxX = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
+			if (minX < 0 || maxX < 0)
+				return INFINITY;
+		}
+		if (maxX < minX)
+			std::swap(maxX, minX);
+
+		norm.set(1, modelMatrix().get(1, 2));
+		norm.set(2, modelMatrix().get(2, 2));
+		norm.set(3, modelMatrix().get(3, 2));
+
+		denom = norm * direction;
+		float minY = 0;
+		float maxY = 0;
+		if (abs(denom) < 0.01)
+		{
+			minY = INFINITY;
+			maxY = INFINITY;
+			yIntercept = false;
+			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
+			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
+			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
+			if (Pdist < Udist || Pdist < Ldist)
+				return INFINITY;
+		}
+		else
+		{
+			minY = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
+			maxY = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
+			if (minY < 0 || maxY < 0)
+				return INFINITY;
+		}
+		if (maxY < minY)
+			std::swap(maxY, minY);
+
+		norm.set(1, modelMatrix().get(1, 3));
+		norm.set(2, modelMatrix().get(2, 3));
+		norm.set(3, modelMatrix().get(3, 3));
+
+		denom = norm * direction;
+		float minZ = 0;
+		float maxZ = 0;
+		if (abs(denom) < 0.01)
+		{
+			minZ = INFINITY;
+			maxZ = INFINITY;
+			zIntercept = false;
+			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
+			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
+			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
+			if (Pdist < Udist || Pdist < Ldist)
+				return INFINITY;
+		}
+		else
+		{
+			minZ = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
+			maxZ = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
+			if (minZ < 0 || maxZ < 0)
+				return INFINITY;
+		}
+		if (maxZ < minZ)
+			std::swap(maxZ, minZ);
+
+		if (xIntercept && yIntercept && zIntercept)
+		{
+			if (maxX < minY || maxX < minZ || maxY < minX || maxY < minZ || maxZ < minX || maxZ < minY)
+				return INFINITY;
+			return std::max({ minX, minY, minZ });
+		}
+		else if (int(xIntercept) + int(yIntercept) + int(zIntercept) == 2)
+		{
+			if (!xIntercept)
+			{
+				if (maxY < minZ || maxZ < minY)
+					return INFINITY;
+				else
+					return std::max(minY, minZ);
+			}
+			if (!yIntercept)
+			{
+				if (maxX < minZ || maxZ < minX)
+					return INFINITY;
+				else
+					return std::max(minX, minZ);
+			}
+			if (!zIntercept)
+			{
+				if (maxX < minY || maxY < minX)
+					return INFINITY;
+				else				
+					return std::max(minX, minY);
+			}
+		}
+		else
+			return std::min({ minX, minY, minZ });
+
+		return INFINITY;
+	}
 }

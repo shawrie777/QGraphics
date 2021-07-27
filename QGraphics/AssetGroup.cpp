@@ -52,37 +52,37 @@ namespace QG
 
 					current->getMaterial()->Bind();
 
-					auto temp = current->getMaterial()->getDiff();
+					//auto temp = current->getMaterial()->getDiff();
 
-					if (current->getMaterial()->usingDifTex())
-					{
-						current->getShader()->setInt("DifTex", *(int*)(std::get_if<unsigned int>(&temp)));
-						QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
-						current->getShader()->setVector<4>("DifCol", noCol);
-						current->getShader()->setBool("useDifTex", true);
-					}
-					else
-					{
-						current->getShader()->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
-						current->getShader()->setInt("DifTex", 31);
-						current->getShader()->setBool("useDifTex", false);
-					}
+					//if (current->getMaterial()->usingDifTex())
+					//{
+					//	current->getShader()->setInt("DifTex", *(int*)(std::get_if<unsigned int>(&temp)));
+					//	QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
+					//	current->getShader()->setVector<4>("DifCol", noCol);
+					//	current->getShader()->setBool("useDifTex", true);
+					//}
+					//else
+					//{
+					//	current->getShader()->setVector<4>("DifCol", *(Colour*)(std::get_if<Colour>(&temp)));
+					//	current->getShader()->setInt("DifTex", 31);
+					//	current->getShader()->setBool("useDifTex", false);
+					//}
 
-					temp = current->getMaterial()->getSpec();
+					//temp = current->getMaterial()->getSpec();
 
-					if (current->getMaterial()->usingSpecTex())
-					{
-						current->getShader()->setInt("SpecTex", *(int*)(std::get_if<unsigned int>(&temp)));
-						QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
-						current->getShader()->setVector<4>("SpecCol", noCol);
-						current->getShader()->setBool("useSpecTex", true);
-					}
-					else
-					{
-						current->getShader()->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
-						current->getShader()->setInt("SpecTex", 31);
-						current->getShader()->setBool("useSpecTex", false);
-					}
+					//if (current->getMaterial()->usingSpecTex())
+					//{
+					//	current->getShader()->setInt("SpecTex", *(int*)(std::get_if<unsigned int>(&temp)));
+					//	QM::vector<4> noCol(-1.0f, -1.0f, -1.0f, -1.0f);
+					//	current->getShader()->setVector<4>("SpecCol", noCol);
+					//	current->getShader()->setBool("useSpecTex", true);
+					//}
+					//else
+					//{
+					//	current->getShader()->setVector<4>("SpecCol", *(Colour*)(std::get_if<Colour>(&temp)));
+					//	current->getShader()->setInt("SpecTex", 31);
+					//	current->getShader()->setBool("useSpecTex", false);
+					//}
 
 					current->getShader()->setFloat("shininess", current->getMaterial()->getShininess());
 

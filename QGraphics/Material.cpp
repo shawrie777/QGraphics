@@ -25,24 +25,14 @@ namespace QG
 	{
 		return std::holds_alternative<Texture>(Specular);
 	}
-	std::variant<Colour, unsigned int> Material::getDiff()
+	std::variant<Colour, Texture> Material::getDiff()
 	{
-		if (auto value = std::get_if<Texture>(&Diffuse))
-			return value->getSlot();
-		else if (auto value = std::get_if<Colour>(&Diffuse))
-			return *value;
-		else
-			throw;
+		return Diffuse;
 	}
 
-	std::variant<Colour, unsigned int> Material::getSpec()
+	std::variant<Colour, Texture> Material::getSpec()
 	{
-		if (auto value = std::get_if<Texture>(&Specular))
-			return value->getSlot();
-		else if (auto value = std::get_if<Colour>(&Specular))
-			return *value;
-		else
-			throw;
+		return Specular;
 	}
 	float Material::getShininess()
 	{

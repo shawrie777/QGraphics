@@ -4,7 +4,7 @@
 
 namespace QG
 {
-	Shader::Shader() : Shader("F:/C++/QGraphics/QGraphics/Vertex.txt", "F:/C++/QGraphics/QGraphics/Frag.txt")
+	Shader::Shader() : Shader("F:/C++/QGraphics/QGraphics/Vertex.vs", "F:/C++/QGraphics/QGraphics/Frag.fs")
 	{
 	}
 
@@ -181,30 +181,37 @@ namespace QG
 
     void Shader::setBool(const std::string& name, bool value) const
     {
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+		auto loc = glGetUniformLocation(ID, name.c_str());
+		if (loc != -1)
+			glUniform1i(loc, value);
     }
 
     void Shader::setInt(const std::string& name, int value) const
     {
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+		auto loc = glGetUniformLocation(ID, name.c_str());
+		if (loc != -1)
+			glUniform1i(loc, value);
     }
 
     void Shader::setUInt(const std::string& name, unsigned int value) const
     {
-		glUniform1f(glGetUniformLocation(ID, name.c_str()), (GLfloat)value);
+		auto loc = glGetUniformLocation(ID, name.c_str());
+		if (loc != -1)
+			glUniform1ui(loc, value);
     }
 
     void Shader::setFloat(const std::string& name, float value) const
     {
 		auto loc = glGetUniformLocation(ID, name.c_str());
-		if (loc == -1)
-			throw("Uniform not found");
-		glUniform1f(loc, value);
+		if (loc != -1)			
+			glUniform1f(loc, value);
     }
 
     void Shader::setDouble(const std::string& name, double value) const
     {
-		glUniform1d(glGetUniformLocation(ID, name.c_str()), value);
+		auto loc = glGetUniformLocation(ID, name.c_str());
+		if (loc != -1)
+			glUniform1d(loc, value);
     }
 
 }

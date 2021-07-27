@@ -83,9 +83,26 @@ namespace QG
 		return proj;
 	}
 
+	void Camera::setPosition(QM::vector<3> pos)
+	{
+		m_position = pos;
+	}
+
 	QM::vector<3> Camera::getPosition()
 	{
 		return m_position;
+	}
+	QM::vector<3> Camera::getForward() const
+	{
+		return m_forwards;
+	}
+	QM::vector<3> Camera::getUp() const
+	{
+		return m_up;
+	}
+	QM::vector<3> Camera::getRight() const
+	{
+		return m_right;
 	}
 	void Camera::enable_hMove()
 	{

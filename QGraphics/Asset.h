@@ -24,6 +24,9 @@ namespace QG
 
 		Shader* shader;
 		Material* material;
+
+		QM::vector<3> Lbound{ 1.0f,1.0f,1.0f };
+		QM::vector<3> Ubound{ -1.0f,-1.0f,-1.0f };
 	public:
 		VertexBuffer vertices;
 		IndexBuffer indices;
@@ -40,8 +43,6 @@ namespace QG
 		Material* getMaterial() const;
 
 		void setMaterial(Material* M);
-
-		void setMaterial(Material M);
 
 		virtual void build();
 
@@ -79,6 +80,11 @@ namespace QG
 		void hide();
 		bool isGrouped() const;
 		GLenum getDrawType() const;
+
+		void insideOut();
+
+		float interceptTime(QM::vector<3> rayOrigin, QM::vector<3> direction);
+		void(*OnClick)(mouseAction action) = nullptr;
 	};
 
 }

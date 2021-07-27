@@ -40,6 +40,10 @@ namespace QG
     void Light::setPosition(QM::vector<3> pos)
     {
         m_position = pos;
+        createShadowTransform();
+
+        if (m_asset)
+            m_asset->setPosition(pos);
     }
 
     Asset* Light::getAsset()
@@ -50,6 +54,7 @@ namespace QG
     void Light::setAsset(Asset* A)
     {
         m_asset = A;
+        m_asset->setPosition(m_position);
     }
     void Light::removeAsset()
     {
@@ -69,14 +74,10 @@ namespace QG
         m_attenuation.set(3, constant);
     }
 
-    std::shared_ptr<Shader> Light::getShader()
-    {
-        return shader;
-    }
-
-    void Light::fillShadowMap()
-    {
-    }
+    //std::shared_ptr<Shader> Light::getShader()
+    //{
+    //    return shader;
+    //}
 
     spotLight::spotLight(QM::vector<3> position, QM::vector<3> direction, float angle)
     {
@@ -87,6 +88,11 @@ namespace QG
         m_asset = nullptr;
         setDirection(direction);
         setAngle(angle);
+
+        shader = std::make_shared<Shader>("f:/c++/qgraphics/QGraphics/point_light_vertex.vs",
+            "f:/c++/qgraphics/QGraphics/point_light_frag.fs",
+            "f:/c++/qgraphics/QGraphics/point_light_geo.gs");
+        createShadowTransform();
         
     }
 
@@ -109,6 +115,14 @@ namespace QG
     {
         if (direction.magnitude() == 0)
             throw("Invalid light direction.");
+
+        if (m_asset)
+        {
+            auto axis = m_direction.cross(direction);
+            auto angle = m_direction.angle(direction);
+            auto rot = QM::rotation(angle, axis);
+            m_asset->changeRotation(rot);
+        }
 
         m_direction = direction.normalise();
     }
@@ -171,6 +185,14 @@ namespace QG
         if (direction.magnitude() == 0)
             throw("Invalid light direction.");
 
+        if (m_asset != nullptr)
+        {
+            auto axis = m_direction.cross(direction);
+            auto angle = m_direction.angle(direction);
+            auto rot = QM::rotation(angle, axis);
+            m_asset->changeRotation(rot);
+        }
+
         m_direction = direction.normalise();
     }
     Asset* areaLight::getArea()
@@ -208,7 +230,9 @@ namespace QG
     pointLight::pointLight()
     {
         lighting::pointLights.push_back(this);
-        shader = std::make_shared<Shader>("f:/c++/qgraphics/QGraphics/point_light_vertex.txt", "f:/c++/qgraphics/QGraphics/point_light_frag.txt", "f:/c++/qgraphics/QGraphics/point_light_geo.txt");
+        shader = std::make_shared<Shader>("f:/c++/qgraphics/QGraphics/point_light_vertex.vs",
+            "f:/c++/qgraphics/QGraphics/point_light_frag.fs",
+            "f:/c++/qgraphics/QGraphics/point_light_geo.gs");
         createShadowTransform();
     }
 
@@ -216,11 +240,11 @@ namespace QG
     {
         lighting::pointLights.push_back(this);
         m_position = position;
-        shader = std::make_shared<Shader>("f:/c++/qgraphics/QGraphics/point_light_vertex.txt", "f:/c++/qgraphics/QGraphics/point_light_frag.txt", "f:/c++/qgraphics/QGraphics/point_light_geo.txt");
+        shader = std::make_shared<Shader>("f:/c++/qgraphics/QGraphics/point_light_vertex.vs", "f:/c++/qgraphics/QGraphics/point_light_frag.fs", "f:/c++/qgraphics/QGraphics/point_light_geo.gs");
         createShadowTransform();
     }
 
-    void pointLight::createShadowTransform()
+    void Light::createShadowTransform()
     {
         shadowTransforms.clear();
 
@@ -228,20 +252,20 @@ namespace QG
         Projection winProj = win->cam->projMatrix();
         double near = winProj.getNear();
         double far = winProj.getFar();
-        double aspect = 0;
+        double aspect = shadowWidth / shadowHeight;
 
-        if (winProj.getType() == camType::orthographic)
-        {
-            shadowWidth = (float)(winProj.getRight() - winProj.getLeft());
-            shadowHeight = (float)(winProj.getTop() - winProj.getBottom());
-            aspect = shadowWidth / shadowHeight;
-        }
-        else
-        {
-            aspect = winProj.getAspect();
-            shadowHeight = (float)(2 * far * tan(QM::rad(winProj.getFOV() / 2)));
-            shadowWidth = (float)(aspect * shadowHeight);
-        }
+        //if (winProj.getType() == camType::orthographic)
+        //{
+        //    shadowWidth = (float)(winProj.getRight() - winProj.getLeft());
+        //    shadowHeight = (float)(winProj.getTop() - winProj.getBottom());
+        //    aspect = shadowWidth / shadowHeight;
+        //}
+        //else
+        //{
+        //    aspect = winProj.getAspect();
+        //    shadowWidth = (float)(2 * far * tan(QM::rad(winProj.getFOV() / 2)));
+        //    shadowHeight = (float)(shadowWidth / aspect);
+        //}
 
         Projection shadowProj(90, aspect, near, far);
 
@@ -266,25 +290,25 @@ namespace QG
                 V.set(2, 2, -1);
                 V.set(2, 4, m_position.get(2));
                 V.set(3, 1, 1);
-                V.set(3, 4, -m_position.get(1));
+                V.set(3, 4, m_position.get(1));
                 V.set(4, 4, 1);
                 break;
             case 2:
                 V.set(1, 1, 1);
                 V.set(1, 4, -m_position.get(1));
-                V.set(2, 3, -1);
+                V.set(2, 3, 1);
                 V.set(2, 4, -m_position.get(3));
-                V.set(3, 2, 1);
-                V.set(3, 4, m_position.get(2));
+                V.set(3, 2, -1);
+                V.set(3, 4, -m_position.get(2));
                 V.set(4, 4, 1);
                 break;
             case 3:
                 V.set(1, 1, 1);
                 V.set(1, 4, -m_position.get(1));
-                V.set(2, 3, 1);
+                V.set(2, 3, -1);
                 V.set(2, 4, m_position.get(3));
-                V.set(3, 2, -1);
-                V.set(3, 4, -m_position.get(2));
+                V.set(3, 2, 1);
+                V.set(3, 4, m_position.get(2));
                 V.set(4, 4, 1);
                 break;
             case 4:
@@ -326,29 +350,28 @@ namespace QG
             }
     }
 
-    shadowMap* pointLight::getShadowMap()
+    shadowMap* Light::getShadowMap()
     {
         return &SM;
     }
 
-    void pointLight::setPosition(QM::vector<3> pos)
-    {
-        Light::setPosition(pos);
-        createShadowTransform();
-    }
-
-    void pointLight::fillShadowMap()
+    void Light::fillShadowMap()
     {
         glViewport(0, 0, (GLsizei)shadowWidth, (GLsizei)shadowHeight);
         SM.BindFBO();
         glClear(GL_DEPTH_BUFFER_BIT);
         shader->use();
         for (unsigned int i = 0; i < 6; ++i)
-            shader->setMatrix<4, 4>("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-        auto win = (window*)(glfwGetWindowUserPointer(glfwGetCurrentContext()));
-        shader->setFloat("far_plane", (float)(win->cam->projMatrix().getFar()));
+            shader->setMatrix<4, 4>("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);        
+        shader->setFloat("far_plane", shadowDepth);
         shader->setVector<3>("lightPos", m_position);
 
+        bool shownAsset = false;
+        if (m_asset != nullptr && m_asset->isShown())
+        {
+            m_asset->hide();
+            shownAsset = true;
+        }
 
         for (auto* x : Assets::assets)
         {
@@ -372,6 +395,11 @@ namespace QG
         }
 
         SM.UnbindFBO();
+
+        if (shownAsset)
+            m_asset->show();
     }
+
+    std::shared_ptr<Shader> Light::getShader() { return shader; }
 }
 

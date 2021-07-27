@@ -54,6 +54,13 @@ namespace QG
 		Unbind();
 	}
 
+	void Texture::setActive()
+	{
+		if (!bound)
+			Bind();
+		glActiveTexture(slot);
+	}
+
 	void Texture::Bind()
 	{
 		if (bound)
@@ -67,9 +74,9 @@ namespace QG
 		slot = GL_TEXTURE0 + pos;
 		*empty = true;
 
-
-		glBindTexture(GL_TEXTURE_2D, ID);
 		glActiveTexture(slot);
+		glBindTexture(GL_TEXTURE_2D, ID);
+		
 		bound = true;
 	}
 
@@ -79,6 +86,7 @@ namespace QG
 			return;
 		int pos = slot - GL_TEXTURE0;
 		texSlots[pos] = false;
+		glActiveTexture(slot);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		bound = false;
 	}
@@ -132,6 +140,12 @@ namespace QG
 		*this = CubeMap(vec);
 	}
 
+	void CubeMap::setActive()
+	{
+		if (!bound)
+			Bind();
+		glActiveTexture(slot);
+	}
 	void CubeMap::Bind()
 	{
 		if (bound)
@@ -144,13 +158,15 @@ namespace QG
 		slot = GL_TEXTURE0 + pos;
 		*empty = true;
 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 		glActiveTexture(slot);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
+
 		bound = true;
 	}
 
 	void CubeMap::Unbind()
 	{
+		glActiveTexture(slot);
 		if (!bound)
 			return;
 		int pos = slot - GL_TEXTURE0;
@@ -164,8 +180,9 @@ namespace QG
 	{
 		initTexSlots();
 
-		glGenTextures(1, &ID);
 		glGenFramebuffers(1, &FBO);
+		glGenTextures(1, &ID);
+;
 		width = 1024;
 		height = 1024;
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Core.h"
 #include "Colour.h"
-//#include "Asset.h"
+#include "Asset.h"
 
 namespace QG
 {
@@ -14,12 +14,13 @@ namespace QG
 		QM::vector<3> m_attenuation;
 		std::shared_ptr<Shader> shader;
 
-		float shadowWidth = 0;
-		float shadowHeight = 0;
+		float shadowWidth = 1024;
+		float shadowHeight = 1024;
+		float shadowDepth = 25.0f;
 
-		virtual std::shared_ptr<Shader> getShader();
+		std::shared_ptr<Shader> getShader();
 
-		virtual void fillShadowMap();
+		shadowMap SM;	
 
 	public:
 		Light();
@@ -34,6 +35,12 @@ namespace QG
 		void removeAsset();
 		QM::vector<3> getAttenuation() const;
 		void setAttenuation(float quadratic, float linear, float constant);
+
+		std::vector <QM::matrix<4, 4>> shadowTransforms;
+		void fillShadowMap();
+		shadowMap* getShadowMap();
+
+		void createShadowTransform();
 	};
 
 	class spotLight : public Light
@@ -56,19 +63,10 @@ namespace QG
 
 	class pointLight : public Light
 	{
-	private:
-		shadowMap SM;
-		std::vector <QM::matrix<4, 4>> shadowTransforms;
-		void createShadowTransform();
-
 	public:
 		pointLight();
 		pointLight(QM::vector<3> position);
 		~pointLight();
-
-		shadowMap* getShadowMap();
-		void setPosition(QM::vector<3> pos) override;
-		void fillShadowMap() override;
 	};
 
 	class directionalLight : public Light

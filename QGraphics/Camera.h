@@ -27,7 +27,7 @@ namespace QG
 		float Yaw = -90.0f;
 		float fov = 90.0f;
 
-		Projection proj = Projection(90,16.0f/9.0f,0.1,1000);
+		Projection proj = Projection(90,16.0f/9.0f,0.1,200);
 
 		void updateCameraVectors();
 
@@ -48,7 +48,14 @@ namespace QG
 		QM::matrix<4, 4> viewMatrix();
 		Projection projMatrix();
 
+		void setPosition(QM::vector<3> pos);
 		QM::vector<3> getPosition();
+
+		QM::vector<3> getForward() const;
+		QM::vector<3> getUp() const;
+		QM::vector<3> getRight() const;
+
+		float getNear() { return (float)proj.getNear(); };
 
 		float getPitch() { return Pitch; };
 		float getYaw() { return Yaw; };
