@@ -34,15 +34,18 @@ namespace QG
 	void Camera::addProjection(Projection& P)
 	{
 			proj = Projection(P);
+			updateCameraVectors();
 	}
 	void Camera::addProjection(double fovX, double aspect, double near, double far)
 	{
 		proj = Projection(fovX, aspect, near, far);
+		updateCameraVectors();
 	}
 
 	void Camera::addProjection(int left, int right, int bottom, int top, int near, int far)
 	{
 			proj = Projection(left, right, bottom, top, near, far);
+			updateCameraVectors();
 	}
 
     QM::matrix<4, 4> Camera::viewMatrix()
@@ -75,13 +78,31 @@ namespace QG
 		return view;
     }
 
-	const QM::matrix<4, 4> Camera::projMatrix() const
+	Projection Camera::projMatrix()
 	{
 		return proj;
 	}
+
+	void Camera::setPosition(QM::vector<3> pos)
+	{
+		m_position = pos;
+	}
+
 	QM::vector<3> Camera::getPosition()
 	{
 		return m_position;
+	}
+	QM::vector<3> Camera::getForward() const
+	{
+		return m_forwards;
+	}
+	QM::vector<3> Camera::getUp() const
+	{
+		return m_up;
+	}
+	QM::vector<3> Camera::getRight() const
+	{
+		return m_right;
 	}
 	void Camera::enable_hMove()
 	{

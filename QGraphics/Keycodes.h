@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 
 enum class keyCode
 {
@@ -127,6 +128,7 @@ MENU         =      348
 };
 
 enum class modCode {
+	NONE	  = 0X0000,
 	SHIFT     = 0X0001,
 	CONTROL   = 0X0002,
 	ALT       = 0X0004,
@@ -134,6 +136,10 @@ enum class modCode {
 	CAPS      = 0X0010,
 	NUMLOCK   = 0X0020
 };
+
+modCode operator|(modCode lhs, modCode rhs);
+modCode operator&(modCode lhs, modCode rhs);
+bool operator==(modCode lhs, modCode rhs);
 
 enum class mouseCode {
 	LEFT     = 0,
@@ -145,3 +151,42 @@ enum class mouseCode {
 	BUTTON7  = 6,
 	BUTTON8  = 7,
 };
+
+enum class keyState
+{
+	release,
+	press
+};
+
+struct keyAction
+{
+	keyCode key;
+	keyState state;
+	modCode mod;
+
+	keyAction(keyCode K, keyState State, modCode Mod);
+};
+
+bool operator<(keyAction lhs, keyAction rhs);
+
+struct mouseAction
+{
+	mouseCode button;
+	keyState state;
+	modCode mod;
+
+	mouseAction(mouseCode M, keyState State, modCode Mod);
+};
+
+bool operator<(mouseAction lhs, mouseAction rhs);
+
+extern std::map<keyAction, void(*)()> keyFuncs;
+extern std::map<mouseAction, void(*)()> mouseFuncs;
+
+void AddKeyFunc(keyCode K, keyState action, modCode mods, void(*func)());
+void AddKeyFunc(keyCode K, void(*func)());
+void RemoveKeyFunc(keyCode K, keyState state = keyState::press, modCode mod = modCode::NONE);
+
+void AddMouseFunc(mouseCode M, keyState action, modCode mods, void(*func)());
+void AddMouseFunc(mouseCode M, void(*func)());
+void RemoveMouseFunc(mouseCode M, keyState state = keyState::press, modCode mod = modCode::NONE);

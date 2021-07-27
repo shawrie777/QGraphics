@@ -294,6 +294,9 @@ namespace QG
 		indices.AddIndices({ 45,46,47,45,47,48,45,48,49 });
 		indices.AddIndices({ 50,51,52,50,52,53,50,53,54 });
 		indices.AddIndices({ 55,56,57,55,57,58,55,58,59 });
+
+		Lbound = QM::vector<3>(-phi, -phi, -phi);
+		Ubound = QM::vector<3>(phi, phi, phi);
 	}
 
 	icosohedron::icosohedron()
@@ -417,6 +420,8 @@ namespace QG
 		for (int i = 0; i < 60; i++)
 			indices.AddIndices({i});
 
+		Lbound = QM::vector<3>(-phi, -phi, -phi);
+		Ubound = QM::vector<3>(phi, phi, phi);
 	}
 
 	sphere::sphere()
@@ -456,23 +461,6 @@ namespace QG
 				indices.AddIndices({ i, i + 1, i + 65,i + 1,i + 65,i + 66 });
 
 
-		/*
-		for (int i = 1; i < 64; i++)
-			indices.AddIndices({ 0,i,i+1 });
-		indices.AddIndices({ 0,64,1 });
-
-		for (int i = 1921; i < 1984; i++)
-			indices.AddIndices({ 1985,i,i+1 });
-		indices.AddIndices({ 1985,1984,1921 });
-
-		for (int i = 1; i < 1921; i++)
-		{
-			if (i % 64 == 0)
-				indices.AddIndices({ i,i - 63,i + 1,i,i + 1,i + 64 });
-			else			
-				indices.AddIndices({ i,i + 1,i + 64,i + 1,i + 64,i + 65 });
-		}
-		*/
 
 	}
 
@@ -529,6 +517,9 @@ namespace QG
 				indices.AddIndices({ i,a,b,a,b,c });
 			}
 		}
+
+		Lbound = QM::vector<3>(-2.0f / ratio, -2.0f / ratio, -1.0f / ratio);		
+		Ubound = QM::vector<3>( 2.0f / ratio,  2.0f / ratio,  1.0f / ratio);
 	}
 	
 }

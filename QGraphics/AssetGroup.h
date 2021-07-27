@@ -19,6 +19,10 @@ namespace QG
 		{
 			m_parent = parent;
 			(m_children.push_back(dynamic_cast<Asset*>(children)), ...);
+
+			m_parent->grouped = true;
+			for (auto* x : m_children)
+				x->grouped = true;
 		}
 
 	};

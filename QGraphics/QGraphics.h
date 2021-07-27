@@ -11,3 +11,4 @@
 #include "Prism.h"
 #include "Light.h"
 #include "AssetGroup.h"
+#include "Skybox.h"

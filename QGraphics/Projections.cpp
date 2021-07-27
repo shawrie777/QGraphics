@@ -23,4 +23,49 @@ namespace QG
 			this->set(4, 4, 1);
 		}
 	}
+
+	double Projection::getFOV() const
+	{
+		if (Type == camType::orthographic)
+			throw("Wrong projection type.");
+		return m_fovX;
+	}
+	double Projection::getAspect() const
+	{
+		if (Type == camType::orthographic)
+			throw("Wrong projection type.");
+		return m_aspect;
+	}
+	double Projection::getNear() const
+	{
+		return m_near;
+	}
+	double Projection::getFar() const
+	{
+		return m_far;
+	}
+	int Projection::getTop() const
+	{
+		if (Type == camType::perspective)
+			throw("Wrong projection type.");
+		return Top;
+	}
+	int Projection::getBottom() const
+	{
+		if (Type == camType::perspective)
+			throw("Wrong projection type.");
+		return Bottom;
+	}
+	int Projection::getLeft() const
+	{
+		if (Type == camType::perspective)
+			throw("Wrong projection type.");
+		return Left;
+	}
+	int Projection::getRight() const
+	{
+		if (Type == camType::perspective)
+			throw("Wrong projection type.");
+		return Right;
+	}
 }

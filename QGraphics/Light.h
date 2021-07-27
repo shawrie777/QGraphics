@@ -1,7 +1,7 @@
 #pragma once
 #include "Core.h"
 #include "Colour.h"
-//#include "Asset.h"
+#include "Asset.h"
 
 namespace QG
 {
@@ -10,23 +10,37 @@ namespace QG
 	protected:
 		Colour m_col;
 		QM::vector<3> m_position;
-		Asset* m_asset;
+		Asset* m_asset = nullptr;
 		QM::vector<3> m_attenuation;
+		std::shared_ptr<Shader> shader;
 
+		float shadowWidth = 1024;
+		float shadowHeight = 1024;
+		float shadowDepth = 25.0f;
+
+		std::shared_ptr<Shader> getShader();
+
+		shadowMap SM;	
 
 	public:
 		Light();
 		~Light();
 
-		virtual Colour getColour() const;
-		virtual void setColour(Colour col);
-		virtual QM::vector<3> getPosition() const;
+		Colour getColour() const;
+		void setColour(Colour col);
+		QM::vector<3> getPosition() const;
 		virtual void setPosition(QM::vector<3> pos);
-		virtual Asset* getAsset();
-		virtual void setAsset(Asset* A);
-		virtual void removeAsset();
-		virtual QM::vector<3> getAttenuation() const;
-		virtual void setAttenuation(float quadratic, float linear, float constant);
+		Asset* getAsset();
+		void setAsset(Asset* A);
+		void removeAsset();
+		QM::vector<3> getAttenuation() const;
+		void setAttenuation(float quadratic, float linear, float constant);
+
+		std::vector <QM::matrix<4, 4>> shadowTransforms;
+		void fillShadowMap();
+		shadowMap* getShadowMap();
+
+		void createShadowTransform();
 	};
 
 	class spotLight : public Light
@@ -77,8 +91,6 @@ namespace QG
 		//must use 2D shape
 		areaLight(Asset& shape);
 		~areaLight();
-		QM::vector<3> getPosition() const;
-		void setPosition(QM::vector<3> pos);
 	};
 
 

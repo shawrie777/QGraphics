@@ -73,6 +73,9 @@ namespace QG
 
 		normal = planeVec1.cross(planeVec2).normalise();
 
+		Lbound = QM::vector<3>(-1.0f, -1.0f, -0.01f);
+		Ubound = QM::vector<3>( 1.0f,  1.0f,  0.01f);
+
 		drawType = GL_TRIANGLE_FAN;
 
 	}

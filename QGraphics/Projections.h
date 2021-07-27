@@ -32,6 +32,17 @@ namespace QG
 			updateMatrix();
 		};
 
+		camType getType() const { return Type; };
+
+		double getFOV() const;
+		double getAspect() const;
+		double getNear() const;
+		double getFar() const;
+
+		int getTop() const;
+		int getBottom() const;
+		int getLeft() const;
+		int getRight() const;
 
 	};
 }
