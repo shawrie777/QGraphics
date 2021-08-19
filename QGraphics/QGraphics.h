@@ -12,3 +12,4 @@
 #include "Light.h"
 #include "AssetGroup.h"
 #include "Skybox.h"
+#include "Text.h"

@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Asset.h"
 #include "Light.h"
+#include "Text.h"
 
 namespace QG
 {
@@ -49,10 +50,12 @@ namespace QG
 	void window::render()
 	{
 		glViewport(0, 0, m_width, m_height);
-		clear();
 
 		for (auto* x : Assets::assets)
 			x->draw();
+
+		for (auto* x : Texts::Texts)
+			x->write();
 
 	}
 
@@ -91,6 +94,7 @@ namespace QG
 		m_width = width;
 		m_height = height;
 		m_title = title;
+		mouseMoveFunc = nullptr;
 
 		if (!initialised)
 			initialised = glfwInit();
@@ -133,7 +137,6 @@ namespace QG
 
 
 		cam = std::make_unique<Camera>(QM::vector<3>(),QM::vector<3>(0.0f,0.0f,-1.0f));
-
 	}
 
 	window::~window()
@@ -143,6 +146,7 @@ namespace QG
 
 	bool window::running()
 	{
+		clear();
 		return !glfwWindowShouldClose(m_window);
 	}
 
@@ -183,5 +187,12 @@ namespace QG
 	{
 		window* myWin = (window*)glfwGetWindowUserPointer(win);
 		myWin->mouseMove(xPos, yPos);
+	}
+	window* getWindow()
+	{
+		auto context = glfwGetCurrentContext();
+		if (context == NULL)
+			return NULL;
+		return(window*)(glfwGetWindowUserPointer(context));
 	}
 }

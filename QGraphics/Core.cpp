@@ -65,6 +65,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     QM::vector<3> rayEnd(rayEnd4.get(1), rayEnd4.get(2), rayEnd4.get(3));
 
     QM::vector<3> direction = rayEnd - rayStart;
+    direction = direction.normalise();
 
     QG::Asset* clicked = nullptr;
     float bestDist = INFINITY;
@@ -81,7 +82,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
     if (bestDist != INFINITY && clicked != nullptr && clicked->OnClick != nullptr)
     {
-        clicked->OnClick(act);
+        clicked->OnClick(clicked, act);
         return;
     }
         

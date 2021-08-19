@@ -6,12 +6,16 @@ namespace QG
 	class cube : public Asset
 	{
 	public:
+		//create 2x2x2 cube
+		//centered at origin
 		cube();
 	};
 
 	class sphere :public Asset
 	{
 	public:
+		//create sphere with radius 1
+		//approximation using 32 rows and 64 columns
 		sphere();
 	};
 
@@ -20,6 +24,9 @@ namespace QG
 	private:
 		float m_ratio;
 	public:
+		//create a torus
+		//the ratio is between distance to centre of tube
+		//and the radius of the tube
 		torus(float ratio = 1.5f);
 	};
 
@@ -28,6 +35,7 @@ namespace QG
 	private:
 		std::vector<QM::vector<3>> norms;
 	public:
+		//create a regular tetrahedron
 		tetrahedron();
 	};
 
@@ -36,6 +44,7 @@ namespace QG
 	private:
 		std::vector<QM::vector<3>> norms;
 	public:
+		//create a regular octahedron
 		octahedron();
 	};
 
@@ -44,6 +53,7 @@ namespace QG
 	private:
 		std::vector<QM::vector<3>> norms;
 	public:
+		//create an regular icosohedron
 		icosohedron();
 	};
 	
@@ -52,6 +62,7 @@ namespace QG
 	private:
 		std::vector<QM::vector<3>> norms;
 	public:
+		//create a regular dodecahedron
 		dodecahedron();
 	};
 

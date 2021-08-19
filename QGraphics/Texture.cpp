@@ -1,5 +1,7 @@
 #include "Texture.h"
 
+std::vector<bool> texSlots;
+
 namespace QG
 {
 	void initTexSlots()
@@ -14,7 +16,7 @@ namespace QG
 	Texture::Texture(const char* filepath)
 	{
 		initTexSlots();
-
+		
 		glGenTextures(1, &ID);
 		Bind();
 		data = stbi_load(filepath, &width, &height, &components, 0);
@@ -54,6 +56,26 @@ namespace QG
 		Unbind();
 	}
 
+	Texture::Texture() :
+		ID(0),
+		width(32),
+		height(32),
+		components(4),
+		data(nullptr),
+		format(GL_RGBA),
+		slot(0),
+		bound(false)
+	{
+		glGenTextures(1, &ID);
+
+		glBindTexture(GL_TEXTURE_2D, ID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
 	void Texture::setActive()
 	{
 		if (!bound)
@@ -89,6 +111,12 @@ namespace QG
 		glActiveTexture(slot);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		bound = false;
+	}
+
+	void Texture::doubleSize()
+	{
+		width *= 2;
+		height *= 2;
 	}
 
 	CubeMap::CubeMap()

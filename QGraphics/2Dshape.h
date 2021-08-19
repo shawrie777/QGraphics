@@ -5,7 +5,6 @@ namespace QG
 {
 	class shape2Dbase : public Asset
 	{
-
 	};
 
 	template<int edges>
@@ -14,7 +13,11 @@ namespace QG
 	protected:
 		QM::vector<3> normal;
 	public:
+		//build vertex and index buffers for 2D shapes
+		//internal use, no need to call in client
 		void build() override;
+
+		//constructor for 2D shape with given number of edges
 		shape2D();
 	};
 

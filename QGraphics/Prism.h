@@ -7,6 +7,7 @@ namespace QG
 	class prism :public frustum<baseSides>
 	{
 	public:
+		//special case of frustrum with ratio 1
 		prism() :frustum<baseSides>(1.0f) {};
 	};
 
@@ -14,6 +15,7 @@ namespace QG
 	class pyramid :public frustum<baseSides>
 	{
 	public:
+		//special case of frustrum with ratio 0
 		pyramid() :frustum<baseSides>(0.0f) {};
 	};
 }

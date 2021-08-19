@@ -86,6 +86,7 @@ namespace QG
 	void Camera::setPosition(QM::vector<3> pos)
 	{
 		m_position = pos;
+		updateCameraVectors();
 	}
 
 	QM::vector<3> Camera::getPosition()
@@ -103,6 +104,24 @@ namespace QG
 	QM::vector<3> Camera::getRight() const
 	{
 		return m_right;
+	}
+
+	void Camera::setPitch(float pitch)
+	{
+		Pitch = pitch;
+		updateCameraVectors();
+	}
+
+	void Camera::setYaw(float yaw)
+	{
+		Yaw = yaw; 
+		updateCameraVectors();
+	}
+
+	void Camera::setFOV(float FOV)
+	{
+		fov = FOV;
+		updateCameraVectors();
 	}
 	void Camera::enable_hMove()
 	{

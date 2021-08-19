@@ -137,8 +137,11 @@ enum class modCode {
 	NUMLOCK   = 0X0020
 };
 
+//allows multiple modifier keys to be used in combination
 modCode operator|(modCode lhs, modCode rhs);
+//allows any of a group of modifier keys to be used
 modCode operator&(modCode lhs, modCode rhs);
+//checks if modCodes are equal
 bool operator==(modCode lhs, modCode rhs);
 
 enum class mouseCode {
@@ -167,6 +170,8 @@ struct keyAction
 	keyAction(keyCode K, keyState State, modCode Mod);
 };
 
+//allows comparing of key actions
+//this is simply to allow mapping to determine a 'correct' order to list them in
 bool operator<(keyAction lhs, keyAction rhs);
 
 struct mouseAction
@@ -178,15 +183,29 @@ struct mouseAction
 	mouseAction(mouseCode M, keyState State, modCode Mod);
 };
 
+//allows comparing of mouse actions
+//this is simply to allow mapping to determine a 'correct' order to list them in
 bool operator<(mouseAction lhs, mouseAction rhs);
 
 extern std::map<keyAction, void(*)()> keyFuncs;
 extern std::map<mouseAction, void(*)()> mouseFuncs;
 
+//add a global function to a specific key action using a function pointer
+//note the function must have no parameters and return void
 void AddKeyFunc(keyCode K, keyState action, modCode mods, void(*func)());
+//add a global function to a specific key action using a function pointer
+//note the function must have no parameters and return void
+//the keystate will be press and there will be no mod keys
 void AddKeyFunc(keyCode K, void(*func)());
+//remove a global key function from the list
 void RemoveKeyFunc(keyCode K, keyState state = keyState::press, modCode mod = modCode::NONE);
 
+//add a global function to a specific mouse action using a function pointer
+//note the function must have no parameters and return void
 void AddMouseFunc(mouseCode M, keyState action, modCode mods, void(*func)());
+//add a global function to a specific mouse action using a function pointer
+//note the function must have no parameters and return void
+//the keystate will be press and there will be no mod keys
 void AddMouseFunc(mouseCode M, void(*func)());
+//remove a global mouse function from the list
 void RemoveMouseFunc(mouseCode M, keyState state = keyState::press, modCode mod = modCode::NONE);

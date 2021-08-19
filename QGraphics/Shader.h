@@ -12,27 +12,32 @@ namespace QG
 		unsigned int vertex, fragment, geometry;
 		bool geo;
 	public:
-		//Creates default shader
+		//loads default shader files
 		Shader();
 
+		//loads shaders from the given paths
 		Shader(const char* vertexPath, const char* fragmentPath);
 
-		//geometry shader optional
+		//loads shaders from the given path, including a geometry shader
 		Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath);
 
 		~Shader();
-
+		//bind this shader for the next draw call
 		void use();
-
+		//set a bool uniform in the shader
 		void setBool(const std::string& name, bool value) const;
+		//set an int uniform in the shader
 		void setInt(const std::string& name, int value) const;
+		//set an unsigned int uniform in the shader
 		void setUInt(const std::string& name, unsigned int value) const;
+		//set a float uniform in the shader
 		void setFloat(const std::string& name, float value) const;
+		//set a double uniform in the shader
 		void setDouble(const std::string& name, double value) const;
-
+		//set a matrix uniform in the shader, of the specified size and type
 		template <int rows, int cols, typename scalar = float>
 		void setMatrix(const std::string& name, QM::matrix<rows, cols, scalar> value);
-
+		//set a vector uniform in the shader, of the specified size and type
 		template <int size, typename scalar = float>
 		void setVector(const std::string& name, QM::vector<size, scalar> value) const;
 	};

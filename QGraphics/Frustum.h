@@ -10,6 +10,9 @@ namespace QG
 		std::vector<QM::vector<3>> norms;
 		float m_ratio = 1.0f;
 	public:
+		//create frustrum with given number of base sides
+		//the ratio is between the size of one end to the other
+		//setting this to 0 will give a pyramid, 1 will give a prism
 		frustum(float ratio);
 	};
 

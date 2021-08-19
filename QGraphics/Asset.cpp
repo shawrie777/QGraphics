@@ -60,6 +60,19 @@ namespace QG
 		//get current camera from current window
 		auto context = glfwGetCurrentContext();
 		window* win = (window*)(glfwGetWindowUserPointer(context));
+
+		if (curve)
+		{
+			float t = std::min(win->runtime(), curve->endTime());
+			setPosition(curve->getPosition(t));
+			if (curve->rotating())
+				changeRotation(curve->getRotation());
+			if (win->runtime() > curve->endTime())
+				curve = nullptr;
+		}
+
+
+
 		shader->setVector<3>("viewPos", win->cam->getPosition());
 		shader->setMatrix<4, 4>("view", win->cam->viewMatrix());
 		shader->setMatrix<4, 4>("projection", win->cam->projMatrix());
@@ -304,6 +317,12 @@ namespace QG
 		material = M;
 	}
 
+	void Asset::setCurve(Curve& c)
+	{
+		curve = &c;
+		curve->setStartTime(getWindow()->runtime());
+	}
+
 	bool Asset::isShown()const { return m_shown; };
 	void Asset::show() { m_shown = true; };
 	void Asset::hide() { m_shown = false; };
@@ -340,127 +359,55 @@ namespace QG
 		highBound3.set(2, highBound4.get(2));
 		highBound3.set(3, highBound4.get(3));
 
-		bool xIntercept = true;
-		bool yIntercept = true;
-		bool zIntercept = true;
+		std::vector<float> minima;
+		std::vector<float> maxima;
+		for (int i = 1; i < 4; i++)
+		{
+			QM::vector<3> norm;
+			norm.set(1, modelMatrix().get(1, i));
+			norm.set(2, modelMatrix().get(2, i));
+			norm.set(3, modelMatrix().get(3, i));
+			norm = norm.normalise();
 
-		QM::vector<3> norm;
-		norm.set(1, modelMatrix().get(1, 1));
-		norm.set(2, modelMatrix().get(2, 1));
-		norm.set(3, modelMatrix().get(3, 1));
-
-		float denom = norm * direction;
-		float minX = 0;
-		float maxX = 0;
-		if (abs(denom) < 0.01)
-		{
-			minX = INFINITY;
-			maxX = INFINITY;
-			xIntercept = false;
-			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
-			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
-			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
-			if (Pdist < Udist || Pdist < Ldist)
-				return INFINITY;
-		}
-		else
-		{
-			minX = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
-			maxX = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
-			if (minX < 0 || maxX < 0)
-				return INFINITY;
-		}
-		if (maxX < minX)
-			std::swap(maxX, minX);
-
-		norm.set(1, modelMatrix().get(1, 2));
-		norm.set(2, modelMatrix().get(2, 2));
-		norm.set(3, modelMatrix().get(3, 2));
-
-		denom = norm * direction;
-		float minY = 0;
-		float maxY = 0;
-		if (abs(denom) < 0.01)
-		{
-			minY = INFINITY;
-			maxY = INFINITY;
-			yIntercept = false;
-			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
-			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
-			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
-			if (Pdist < Udist || Pdist < Ldist)
-				return INFINITY;
-		}
-		else
-		{
-			minY = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
-			maxY = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
-			if (minY < 0 || maxY < 0)
-				return INFINITY;
-		}
-		if (maxY < minY)
-			std::swap(maxY, minY);
-
-		norm.set(1, modelMatrix().get(1, 3));
-		norm.set(2, modelMatrix().get(2, 3));
-		norm.set(3, modelMatrix().get(3, 3));
-
-		denom = norm * direction;
-		float minZ = 0;
-		float maxZ = 0;
-		if (abs(denom) < 0.01)
-		{
-			minZ = INFINITY;
-			maxZ = INFINITY;
-			zIntercept = false;
-			float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm) / norm.magnitude();
-			float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm) / norm.magnitude();
-			float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm) / norm.magnitude();
-			if (Pdist < Udist || Pdist < Ldist)
-				return INFINITY;
-		}
-		else
-		{
-			minZ = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
-			maxZ = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
-			if (minZ < 0 || maxZ < 0)
-				return INFINITY;
-		}
-		if (maxZ < minZ)
-			std::swap(maxZ, minZ);
-
-		if (xIntercept && yIntercept && zIntercept)
-		{
-			if (maxX < minY || maxX < minZ || maxY < minX || maxY < minZ || maxZ < minX || maxZ < minY)
-				return INFINITY;
-			return std::max({ minX, minY, minZ });
-		}
-		else if (int(xIntercept) + int(yIntercept) + int(zIntercept) == 2)
-		{
-			if (!xIntercept)
+			float denom = norm * direction;
+			float min = 0;
+			float max = 0;
+			if (abs(denom) < 0.00001)
 			{
-				if (maxY < minZ || maxZ < minY)
+				min = INFINITY;
+				max = INFINITY;
+				float Udist = abs((QM::vector<3>)(rayOrigin - highBound3) * norm);
+				float Ldist = abs((QM::vector<3>)(rayOrigin - lowBound3) * norm);
+				float Pdist = abs((QM::vector<3>)(highBound3 - lowBound3) * norm);
+				if (Pdist < Udist || Pdist < Ldist)
 					return INFINITY;
-				else
-					return std::max(minY, minZ);
+
+				continue;
 			}
-			if (!yIntercept)
-			{
-				if (maxX < minZ || maxZ < minX)
-					return INFINITY;
-				else
-					return std::max(minX, minZ);
+			else {
+				min = (QM::vector<3>)(lowBound3 - rayOrigin) * norm / denom;
+				max = (QM::vector<3>)(highBound3 - rayOrigin) * norm / denom;
+				if (max < min)
+					std::swap(max, min);
 			}
-			if (!zIntercept)
-			{
-				if (maxX < minY || maxY < minX)
-					return INFINITY;
-				else				
-					return std::max(minX, minY);
-			}
+
+			if (max < 0)
+				return INFINITY;
+			if (min < 0)
+				min = 0.0f;
+
+			minima.push_back(min);
+			maxima.push_back(max);
 		}
-		else
-			return std::min({ minX, minY, minZ });
+
+		float max_min = *std::max_element(minima.begin(), minima.end());
+		float min_max = *std::min_element(maxima.begin(), maxima.end());
+
+		if (min_max < max_min)
+			return INFINITY;
+		if (max_min == 0.0f)
+			return min_max;
+		return max_min;		
 
 		return INFINITY;
 	}

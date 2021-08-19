@@ -14,9 +14,13 @@ namespace QG
 
 		std::vector<float> getFloats();
 	public:
+		//create a vertex, consisting of position, texture coordinates, and a normal vector
 		Vertex();
+		//create a vertex, consisting of position, texture coordinates, and a normal vector
 		Vertex(QM::vector<3> pos);
+		//create a vertex, consisting of position, texture coordinates, and a normal vector
 		Vertex(QM::vector<3> pos, QM::vector<2> tex, QM::vector<3> norm);
+		//create a vertex, consisting of position, texture coordinates, and a normal vector
 		Vertex(float x, float y, float z);
 
 		QM::vector<3> getPosition();
@@ -28,6 +32,6 @@ namespace QG
 		void setNormal(QM::vector<3> norm);
 	};
 
-
+	//gets the distance between the positions of two vertices
 	float dist(Vertex& v1, Vertex& v2);
 }
