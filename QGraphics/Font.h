@@ -3,8 +3,10 @@
 #include "Shader.h"
 #include "Projections.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include "Dependencies/Freetype/ft2build.h"
+#include "Dependencies/Freetype/freetype/freetype.h"
+;
+
 
 namespace QG
 {

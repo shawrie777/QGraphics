@@ -89,20 +89,17 @@ namespace QG
 		mouseY = (float)ypos;
 	}
 
-	window::window(int width, int height, const char* title) : mouseX((float)width / 2.0f), mouseY((float)height / 2.0f)
+	void window::createWindow(GLFWmonitor* monitor)
 	{
-		m_width = width;
-		m_height = height;
-		m_title = title;
 		mouseMoveFunc = nullptr;
-
-		if (!initialised)
-			initialised = glfwInit();
+		mouseX = (float)m_width / 2.0f;
+		mouseY = (float)m_height / 2.0f;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		m_window = glfwCreateWindow(width, height, title, NULL, NULL);
+
+		m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), monitor, NULL);
 
 		if (m_window == NULL)
 		{
@@ -135,8 +132,35 @@ namespace QG
 		glEnable(GL_TEXTURE_3D);
 		glDebugMessageCallback(MessageCallback, 0);
 
+		cam = std::make_unique<Camera>(QM::vector<3>(), QM::vector<3>(0.0f, 0.0f, -1.0f));
+	}
 
-		cam = std::make_unique<Camera>(QM::vector<3>(),QM::vector<3>(0.0f,0.0f,-1.0f));
+	window::window(int width, int height, const char* title)
+	{
+		m_title = title;
+
+		if (!initialised)
+			initialised = glfwInit();
+
+		m_width = width;
+		m_height = height;
+
+		createWindow(NULL);
+	}
+
+	window::window(const char* title)
+	{
+		m_title = title;
+
+		if (!initialised)
+			initialised = glfwInit();
+
+		auto monitor = glfwGetPrimaryMonitor();
+		auto vidMode = glfwGetVideoMode(monitor);
+		m_width = vidMode->width;
+		m_height = vidMode->height;
+
+		createWindow(monitor);
 	}
 
 	window::~window()
@@ -178,7 +202,7 @@ namespace QG
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void window::addCamera(Camera c)
+	void window::addCamera(Camera& c)
 	{
 		cam.reset(&c);
 	}

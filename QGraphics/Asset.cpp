@@ -3,6 +3,8 @@
 #include <string>
 #include "Window.h"
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 namespace Assets
 {
@@ -19,6 +21,194 @@ namespace QG
 	Asset::Asset(VertexBuffer& VB, IndexBuffer& IB, Shader& S) : vertices(VB), indices(IB), shader(&S), material(new Material), defaultShader(false) { Assets::assets.push_back(this); };
 
 	Asset::Asset(VertexBuffer& VB, IndexBuffer& IB) : vertices(VB), indices(IB), shader(new Shader), material(new Material), defaultShader(false) { Assets::assets.push_back(this); };
+
+	Asset::Asset(const std::string filepath) : shader(new Shader), material(new Material), defaultShader(true)
+	{
+		std::ifstream stream;
+		std::string content;
+		stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			stream.open(filepath);
+			std::stringstream string;
+			string << stream.rdbuf();
+			stream.close();
+			content = string.str();
+		}
+		catch (std::ifstream::failure e)
+		{
+			std::cout << "ERROR, failed to read asset file: " << filepath << std::endl;
+		}
+
+		std::string target("positions-array");
+		auto startPos = std::search(content.begin(), content.end(), target.begin(),target.end());
+		target = ">";
+		startPos = std::search(startPos, content.end(), target.begin(), target.end());
+		startPos++;
+
+		target = "<";
+		auto endPos = std::search(startPos, content.end(), target.begin(), target.end());
+
+		std::vector<float> values;
+		std::string data = content.substr(startPos - content.begin(), endPos-startPos);
+		bool finding = true;
+		std::string::size_type sz = 0;
+		while (finding)
+		{
+			try
+			{
+				float value = std::stof(data, &sz);
+				values.push_back(value);
+				data = data.substr(sz);
+			}
+			catch (const std::invalid_argument& e)
+			{
+				finding = false;
+			}
+		}
+		_ASSERT(values.size() % 3 == 0);
+
+		Lbound = QM::vector<3>();
+		Ubound = QM::vector<3>();
+
+		std::vector<QM::vector<3>> positions;
+		int i = 0;
+		while (i<values.size())
+		{
+			QM::vector<3> pos;
+			pos.set(1, values[i++]);
+			pos.set(2, values[i++]);
+			pos.set(3, values[i++]);
+			positions.push_back(pos);
+
+			Lbound.set(1, std::min(Lbound.get(1), pos.get(1)));
+			Lbound.set(2, std::min(Lbound.get(2), pos.get(2)));
+			Lbound.set(3, std::min(Lbound.get(3), pos.get(3)));
+
+			Ubound.set(1, std::max(Ubound.get(1), pos.get(1)));
+			Ubound.set(2, std::max(Ubound.get(2), pos.get(2)));
+			Ubound.set(3, std::max(Ubound.get(3), pos.get(3)));
+		}
+		values.clear();
+
+		target = "normals-array";
+		startPos = std::search(content.begin(), content.end(), target.begin(), target.end());
+		target = ">";
+		startPos = std::search(startPos, content.end(), target.begin(), target.end());
+		startPos++;
+
+		target = "<";
+		endPos = std::search(startPos, content.end(), target.begin(), target.end());
+
+		data = content.substr(startPos - content.begin(), endPos - startPos);
+		finding = true;		
+		while (finding)
+		{
+			try
+			{
+				float value = std::stof(data, &sz);
+				values.push_back(value);
+				data = data.substr(sz);
+			}
+			catch (const std::invalid_argument& e)
+			{
+				finding = false;
+			}
+		}
+		_ASSERT(values.size() % 3 == 0);
+
+		std::vector<QM::vector<3>> normals;
+		i = 0;
+		while (i < values.size())
+		{
+			QM::vector<3> norm;
+			norm.set(1, values[i++]);
+			norm.set(2, values[i++]);
+			norm.set(3, values[i++]);
+			normals.push_back(norm);
+		}
+		values.clear();
+
+		target = "mesh-map";
+		startPos = std::search(content.begin(), content.end(), target.begin(), target.end());
+		target = "count";
+		startPos = std::search(startPos, content.end(), target.begin(), target.end());
+		target = ">";
+		startPos = std::search(startPos, content.end(), target.begin(), target.end());
+		startPos++;
+
+		target = "<";
+		endPos = std::search(startPos, content.end(), target.begin(), target.end());
+
+		data = content.substr(startPos - content.begin(), endPos - startPos);
+		finding = true;
+		while (finding)
+		{
+			try
+			{
+				float value = std::stof(data, &sz);
+				values.push_back(value);
+				data = data.substr(sz);
+			}
+			catch (const std::invalid_argument& e)
+			{
+				finding = false;
+			}
+		}
+		_ASSERT(values.size() % 2 == 0);
+
+		std::vector<QM::vector<2>> texCoords;
+		i = 0;
+		while (i < values.size())
+		{
+			QM::vector<2> tex;
+			tex.set(1, values[i++]);
+			tex.set(2, -1.0f * values[i++]);
+			texCoords.push_back(tex);
+		}
+		values.clear();
+
+		target = "<p>";
+		startPos = std::search(content.begin(), content.end(), target.begin(), target.end());
+		startPos += 3;
+
+		target = "<";
+		endPos = std::search(startPos, content.end(), target.begin(), target.end());
+
+		data = content.substr(startPos - content.begin(), endPos - startPos);
+		std::vector<int> Ivalues;
+		finding = true;
+		while (finding)
+		{
+			try
+			{
+				int value = std::stoi(data, &sz);
+				Ivalues.push_back(value);
+				data = data.substr(sz);
+			}
+			catch (const std::invalid_argument& e)
+			{
+				finding = false;
+			}
+		}
+		_ASSERT(Ivalues.size() % 3 == 0);
+
+		i = 0;
+		while (i < Ivalues.size())
+		{
+			int pos_index = Ivalues[i++];
+			int norm_index = Ivalues[i++];
+			int tex_index = Ivalues[i++];
+
+			QG::Vertex X(positions[pos_index], texCoords[tex_index], normals[norm_index]);
+			vertices.push_back(X);
+		}
+
+		for (int j = 0; j < vertices.vertexCount(); j++)
+			indices.AddIndices({ j });
+
+		Assets::assets.push_back(this);
+	}
 
 	Asset::~Asset() {
 		if (defaultShader)
@@ -68,7 +258,16 @@ namespace QG
 			if (curve->rotating())
 				changeRotation(curve->getRotation());
 			if (win->runtime() > curve->endTime())
+			{
+				setPosition(curve->getPosition(curve->endTime()));
+				for (auto i = Curves::curves.begin(); i != Curves::curves.end(); i++)
+					if (curve == *i)
+					{
+						Curves::curves.erase(i);
+						break;
+					}
 				curve = nullptr;
+			}
 		}
 
 
@@ -160,12 +359,6 @@ namespace QG
 
 	QM::matrix<4, 4, float> Asset::modelMatrix()
 	{
-		QM::matrix<4, 4> Mscale;
-		Mscale.set(1, 1, scale.get(1));
-		Mscale.set(2, 2, scale.get(2));
-		Mscale.set(3, 3, scale.get(3));
-		Mscale.set(4, 4, 1);
-		
 		QM::matrix<4, 4> Mrotation;
 
 		float angle = 2.0f * (float)acos(rotation.r);
@@ -196,7 +389,7 @@ namespace QG
 		Mtranslation.set(2, 4, position.get(2));
 		Mtranslation.set(3, 4, position.get(3));
 
-		return Mtranslation * Mrotation * Mscale;
+		return Mtranslation * Mrotation * scale;
 	}
 
 	void Asset::setScale(float SF)
@@ -206,15 +399,50 @@ namespace QG
 
 	void Asset::setScale(float x, float y, float z)
 	{
-		scale = QM::vector<3>(x, y, z);
+		QM::matrix<4, 4> temp = QM::identity<4>();
+		temp.set(1, 1, x);
+		temp.set(2, 2, y);
+		temp.set(3, 3, z);
+		scale = temp;
 	}
 
 	void Asset::setScale(QM::vector<3> SF)
 	{
-		scale = SF;
+		QM::matrix<4, 4> temp = QM::identity<4>();
+		for (int i = 1; i < 4; i++)
+			temp.set(i, i, SF.get(i));
+
+		scale = temp;
 	}
 
-	QM::vector<3> Asset::getScale()
+	void Asset::setScale(float SF, QM::vector<3> direction)
+	{
+		QM::vector<3> alpha;
+
+		if (direction.get(2) == 0 && direction.get(3) == 0)
+			alpha = QM::vector<3>(0.0f, 1.0f, 0.0f);
+		else
+			alpha = QM::vector<3>(1.0f, 0.0f, 0.0f);
+
+		QM::vector<3> beta = direction.cross(alpha);
+		alpha = beta.cross(direction);
+
+		QM::matrix<4, 4> Q;
+		for (int i = 1; i < 4; i++)
+		{
+			Q.set(i, 1, direction.get(i));
+			Q.set(i, 2, alpha.get(i));
+			Q.set(i, 3, beta.get(i));
+		}
+		Q.set(4, 4, 1);
+		auto inv_Q = Q.inverse();
+		QM::matrix<4, 4> P = QM::identity<4>();
+		P.set(1, 1, SF);
+
+		scale = Q * P * inv_Q;
+	}
+
+	QM::matrix<4,4> Asset::getScale()
 	{
 		return scale;
 	}
@@ -226,16 +454,47 @@ namespace QG
 
 	void Asset::changeScale(float x, float y, float z)
 	{
-		scale.set(1, scale.get(1) * x);
-		scale.set(2, scale.get(2) * y);
-		scale.set(3, scale.get(3) * z);
+		QM::matrix<4, 4> temp = QM::identity<4>();
+		temp.set(1, 1, x);
+		temp.set(2, 2, y);
+		temp.set(3, 3, z);
+		scale = temp * scale;
 	}
 
 	void Asset::changeScale(QM::vector<3> SF)
 	{
-		scale.set(1, scale.get(1) * SF.get(1));
-		scale.set(2, scale.get(2) * SF.get(2));
-		scale.set(3, scale.get(3) * SF.get(3));
+		QM::matrix<4, 4> temp = QM::identity<4>();
+		for (int i = 1; i < 4; i++)
+			temp.set(i, i, SF.get(i));
+
+		scale = temp * scale;
+	}
+
+	void Asset::changeScale(float SF, QM::vector<3> direction)
+	{
+		QM::vector<3> alpha;
+
+		if (direction.get(2) == 0 && direction.get(3) == 0)
+			alpha = QM::vector<3>(0.0f, 1.0f, 0.0f);
+		else
+			alpha = QM::vector<3>(1.0f, 0.0f, 0.0f);
+
+		QM::vector<3> beta = direction.cross(alpha);
+		alpha = beta.cross(direction);
+
+		QM::matrix<4, 4> Q;
+		for (int i = 1; i < 4; i++)
+		{
+			Q.set(i, 1, direction.get(i));
+			Q.set(i, 2, alpha.get(i));
+			Q.set(i, 3, beta.get(i));
+		}
+		Q.set(4, 4, 1);
+		auto inv_Q = Q.inverse();
+		QM::matrix<4, 4> P = QM::identity<4>();
+		P.set(1, 1, SF);
+
+		scale = Q * P * inv_Q * scale;
 	}
 
 	void Asset::setRotation(double xAngle, double yAngle, double zAngle)
@@ -318,8 +577,9 @@ namespace QG
 	}
 
 	void Asset::setCurve(Curve& c)
-	{
-		curve = &c;
+	{		
+		Curves::curves.push_back(std::make_shared<Curve>(c));
+		curve = Curves::curves.back();
 		curve->setStartTime(getWindow()->runtime());
 	}
 
@@ -410,5 +670,44 @@ namespace QG
 		return max_min;		
 
 		return INFINITY;
+	}
+	bool Asset::hasCurve()
+	{
+		return curve != nullptr;
+	}
+
+	bool Asset::collides(Asset* asset)
+	{
+		auto model = modelMatrix();
+		QM::vector<4> temp = model * QM::vector<4>(Lbound.get(1), Lbound.get(2), Lbound.get(3), 1.0f);		
+		QM::vector<3> first_Lbound(temp.get(1), temp.get(2), temp.get(3));
+
+		temp = model * QM::vector<4>(Ubound.get(1), Ubound.get(2), Ubound.get(3), 1.0f);
+		QM::vector<3> first_Ubound(temp.get(1), temp.get(2), temp.get(3));
+
+		temp = model * QM::vector<4>(asset->Lbound.get(1), asset->Lbound.get(2), asset->Lbound.get(3), 1.0f);
+		QM::vector<3> second_Lbound(temp.get(1), temp.get(2), temp.get(3));
+
+		temp = model * QM::vector<4>(asset->Ubound.get(1), asset->Ubound.get(2), asset->Ubound.get(3), 1.0f);
+		QM::vector<3> second_Ubound(temp.get(1), temp.get(2), temp.get(3));
+
+		for (int i = 1; i < 4; i++)
+		{
+			std::vector<float> values;
+			values.push_back(first_Lbound.get(i));
+			values.push_back(first_Ubound.get(i));
+			values.push_back(second_Lbound.get(i));
+			values.push_back(second_Ubound.get(i));
+
+			std::vector<float> value_copy = values;
+			std::sort(value_copy.begin(), value_copy.end());
+
+			int A = std::find(value_copy.begin(), value_copy.end(), values[0]) - value_copy.begin();
+			int B = std::find(value_copy.begin(), value_copy.end(), values[1]) - value_copy.begin();
+
+			if (A + B == 1 || A + B == 5)
+				return false;
+		}
+		return true;
 	}
 }

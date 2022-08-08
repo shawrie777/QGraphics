@@ -29,8 +29,10 @@ namespace QG
 		
 		//add a vertex to the buffer
 		void push_back(Vertex v);
+
 		//access the vertex at index i
 		Vertex& operator[](int i);
+
 		//how many vertices are in the buffer
 		int vertexCount();
 

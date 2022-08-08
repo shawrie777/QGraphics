@@ -1,15 +1,16 @@
 #pragma once
 #include "Core.h"
 #include "Window.h"
+#include <functional>
 
 namespace QG
 {
 	class Curve
 	{
 	private:
-		float(*x_func)(float time);
-		float(*y_func)(float time);
-		float(*z_func)(float time);
+		std::function<float(float)> x_func;
+		std::function<float(float)> y_func;
+		std::function<float(float)> z_func;
 		float m_duration;
 		bool m_rotate = false;
 		float m_startTime = 0.0f;
@@ -18,7 +19,8 @@ namespace QG
 		//create a curve as parameterised vector function, using function pointers for each component
 		//each fuction should take runtime as a parameter and output a position component
 		//curve can be followed indefinitely by setting duration to INFINITE
-		Curve(float(*x)(float), float(*y)(float), float(*z)(float), float duration);
+		Curve(std::function<float(float)> x, std::function<float(float)> y, std::function<float(float)> z, float duration);
+
 		//get the position along the curve at a given time
 		//by default gets position at current time
 		QM::vector<3> getPosition(float t = QG::getWindow()->runtime());
@@ -41,4 +43,9 @@ namespace QG
 		//usually the moment the curve is assigned to the asset
 		void setStartTime(float time);
 	};
+}
+
+namespace Curves
+{
+	extern std::vector<std::shared_ptr<QG::Curve>> curves;
 }

@@ -10,7 +10,7 @@ namespace QG
 	{
 		friend class AssetGroup;
 	protected:
-		QM::vector<3> scale{ 1.0f,1.0f,1.0f };
+		QM::matrix<4, 4> scale = QM::identity<4>();
 		QM::Quaternion rotation{ 1,0,0,0 };
 		QM::vector<3> position{ 0.0f,0.0f,0.0f };
 		bool built = false;
@@ -25,7 +25,7 @@ namespace QG
 
 		Shader* shader;
 		Material* material;
-		Curve* curve = nullptr;
+		std::shared_ptr<Curve> curve = nullptr;
 
 		QM::vector<3> Lbound{ 1.0f,1.0f,1.0f };
 		QM::vector<3> Ubound{ -1.0f,-1.0f,-1.0f };
@@ -46,6 +46,9 @@ namespace QG
 		//Create asset with existing vertex buffer and index buffer but default shader
 		//generally not needed, use derived classes instead
 		Asset(VertexBuffer& VB, IndexBuffer& IB);
+
+		//load an asset using a Collada (.dae) file
+		Asset(const std::string filepath);
 		~Asset();
 
 		//get pointer to this objects shader
@@ -84,8 +87,10 @@ namespace QG
 		virtual void setScale(float x, float y, float z);
 		//set the scale on each axis independently
 		virtual void setScale(QM::vector<3> SF);
-		//get the current scale on each axis, as a vector
-		virtual QM::vector<3> getScale();
+		//stretch the object in the given direction
+		virtual void setScale(float SF, QM::vector<3> direction);
+		//get the current scale on each axis, as a matrix
+		virtual QM::matrix<4,4> getScale();
 
 		//rescale equally in each direction, accounting for existing scale
 		virtual void changeScale(float SF);
@@ -93,6 +98,8 @@ namespace QG
 		virtual void changeScale(float x, float y, float z);
 		//rescale on each axis independently, accounting for existing scale
 		virtual void changeScale(QM::vector<3> SF);
+		//add a stretch to the object in the given direction
+		virtual void changeScale(float SF, QM::vector<3> direction);
 
 		//set rotation using Euler angles
 		virtual void setRotation(double xAngle, double yAngle, double zAngle);
@@ -150,6 +157,12 @@ namespace QG
 		//the pointed-to function should check the mouseAction members
 		//to make sure the action only happens in the right case
 		void(*OnClick)(QG::Asset* asset, mouseAction action) = nullptr;
+
+		//check if the asset is currently following a curve
+		bool hasCurve();
+
+		//test if two objects overlap
+		bool collides(Asset* asset);
 	};
 
 }

@@ -66,6 +66,9 @@ namespace QG
 
 	void Text::write()
 	{
+		if (!m_shown)
+			return;
+
 		if (!m_font)
 			throw("No font selected.");
 

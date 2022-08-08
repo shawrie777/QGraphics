@@ -72,12 +72,15 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
     for (auto& x : Assets::assets)
     {
-        float dist = x->interceptTime(rayStart, direction);
-        if (dist < bestDist)
+        if (x->isShown())
         {
-            clicked = x;
-            bestDist = dist;
+            float dist = x->interceptTime(rayStart, direction);
+            if (dist < bestDist)
+            {
+                clicked = x;
+                bestDist = dist;
         }
+    }
     }
 
     if (bestDist != INFINITY && clicked != nullptr && clicked->OnClick != nullptr)

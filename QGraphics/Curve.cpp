@@ -1,14 +1,20 @@
 #include "Curve.h"
 
+namespace Curves
+{
+	std::vector<std::shared_ptr<QG::Curve>> curves;
+}
+
 namespace QG
 {
-	Curve::Curve(float(*x)(float), float(*y)(float), float(*z)(float), float duration)
+	Curve::Curve(std::function<float(float)> x, std::function<float(float)> y, std::function<float(float)> z, float duration)
 	{
 		x_func = x;
 		y_func = y;
 		z_func = z;
 		m_duration = duration;
 	}
+
 	QM::vector<3> Curve::getPosition(float t)
 	{
 		return QM::vector<3>(x_func(t), y_func(t), z_func(t));

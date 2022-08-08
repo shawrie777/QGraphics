@@ -30,9 +30,12 @@ namespace QG
 
 		void(*mouseMoveFunc)(double xpos, double ypos);
 
+		void createWindow(GLFWmonitor* monitor);
 	public:
 		//create an openGL window with the specified size and title
 		window(int width, int height, const char* title);
+		//create a full-screen window with the given title
+		window(const char* title);
 		~window();
 
 		//the camera currently being used in the window
@@ -56,7 +59,7 @@ namespace QG
 		float deltaTime() { return m_deltaTime; };
 
 		//replace the current camera with a new one
-		void addCamera(Camera c);
+		void addCamera(Camera& c);
 
 		//process keyboard controls for the camera
 		//internal use

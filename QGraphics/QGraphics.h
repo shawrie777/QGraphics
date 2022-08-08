@@ -13,3 +13,5 @@
 #include "AssetGroup.h"
 #include "Skybox.h"
 #include "Text.h"
+#include "Keycodes.h"
+#include "Curve.h"
