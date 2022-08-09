@@ -165,6 +165,7 @@ namespace QG
 
 	window::~window()
 	{
+		cam.release();
 		glfwTerminate();
 	}
 
