@@ -59,6 +59,18 @@ namespace QG
 
 	}
 
+	void window::setCursor(Cursor& C)
+	{
+		cursor = &C;
+		glfwSetCursor(m_window, C.m_cursor);
+	}
+
+	void window::removeCursor()
+	{
+		cursor = nullptr;
+		glfwSetCursor(m_window, NULL);
+	}
+
 	void window::mouseMove(double xpos, double ypos)
 	{
 		if (firstMouse)

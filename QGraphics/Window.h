@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "Colour.h"
 #include "Camera.h"
+#include "Cursor.h"
 static bool initialised = false;
 
 namespace QG
@@ -14,6 +15,8 @@ namespace QG
 		GLFWwindow* m_window;
 		float m_deltaTime = 0;
 		float m_lastFrameTime = 0;
+
+		Cursor* cursor;
 
 		bool camRotate = false;
 		bool camPan = false;
@@ -84,6 +87,9 @@ namespace QG
 		//draw all assets in the scene
 		//no need to call directly, since it is included in endFrame()
 		void render();
+
+		void setCursor(Cursor& C);
+		void removeCursor();
 	};
 
 	//get a pointer to the current window

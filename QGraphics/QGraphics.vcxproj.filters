@@ -111,6 +111,9 @@
     <ClInclude Include="Curve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp">
@@ -174,6 +177,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Curve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
