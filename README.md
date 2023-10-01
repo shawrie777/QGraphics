@@ -1,5 +1,5 @@
 <h1>QGraphics</h1>
-This C++ graphics library for windoows 
+This C++ graphics library for windoows offers a wide range of functions to facilitate building 3D graphics programs, including creating windows, creating 3D assets, materials and lighting.
 
 <h2>Getting Started in Visual Studio</h2>
 Clone this repo from the main page my clicking Code -> Download ZIP.
